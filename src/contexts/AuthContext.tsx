@@ -1,5 +1,5 @@
 
-import { createContext, useState, useContext, ReactNode } from "react";
+import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 
@@ -25,6 +25,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Verifica se já existe um usuário salvo no localStorage ao iniciar
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
   const login = async (email: string, password: string, role: "admin" | "employee") => {
     setIsLoading(true);
     try {
@@ -32,24 +40,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setTimeout(() => {
         // Mock users for demo purposes
         if (email && password) {
+          let userData;
+          
           if (role === "admin") {
-            setUser({
+            userData = {
               id: "1",
               name: "Amanda Silva",
               email: email,
               role: "admin",
               photo: "https://i.pravatar.cc/150?img=32"
-            });
+            };
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
             toast.success("Login realizado com sucesso!");
             navigate('/admin/dashboard');
           } else {
-            setUser({
+            userData = {
               id: "2",
               name: "Carlos Oliveira",
               email: email,
               role: "employee",
               photo: "https://i.pravatar.cc/150?img=12"
-            });
+            };
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
             toast.success("Login realizado com sucesso!");
             navigate('/employee/certificates');
           }
@@ -63,6 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem('user');
     setUser(null);
     toast.info("Sessão encerrada");
     navigate('/');
