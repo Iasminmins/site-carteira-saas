@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCertificates } from "@/contexts/CertificateContext";
 import { Header } from "@/components/Header";
 import { CertificateCard } from "@/components/CertificateCard";
+import { EmployeeCard } from "@/components/EmployeeCard";
 import { 
   Select, 
   SelectContent, 
@@ -14,7 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search } from "lucide-react";
+import { Search, Certificate } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const EmployeeCertificates = () => {
   const { user } = useAuth();
@@ -74,6 +76,16 @@ const EmployeeCertificates = () => {
                   <p className="text-xs text-red-600">Expirados</p>
                 </div>
               </div>
+              
+              {/* Botão de Carteirinha */}
+              {user && (
+                <EmployeeCard
+                  name={user.name}
+                  id={user.id}
+                  photo={user.photo}
+                  certificates={employeeCertificates}
+                />
+              )}
             </CardContent>
           </Card>
           

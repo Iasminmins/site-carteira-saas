@@ -1,214 +1,331 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { useCertificates } from "@/contexts/CertificateContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { Plus, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { CertificateCard } from "@/components/CertificateCard";
+import { useAuth } from "@/contexts/AuthContext";
+import { EmployeeCard } from "@/components/EmployeeCard";
+import { useMobile } from "@/hooks/use-mobile";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  Plus,
+  Search,
+  FileCheck,
+  ListCheck,
+  Eye,
+  Certificate
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const CertificatesManagement = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  const { isMobile, isMenuOpen, toggleMenu } = useMobile();
+  const { certificates, getFilteredCertificates } = useCertificates();
+  const { user } = useAuth();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [certificatePreview, setCertificatePreview] = useState<string | null>(null);
-  
-  const { certificates, getCertificate } = useCertificates();
-  const navigate = useNavigate();
-  
-  const filteredCertificates = certificates.filter(cert => {
-    const matchesSearch = cert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         cert.employeeName?.toLowerCase().includes(searchQuery.toLowerCase());
+  const [employeeFilter, setEmployeeFilter] = useState("all");
+
+  const filteredCertificates = certificates.filter((cert) => {
+    const matchesSearch = cert.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || cert.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
+    const matchesEmployee =
+      employeeFilter === "all" || cert.employeeId === employeeFilter;
+
+    return matchesSearch && matchesStatus && matchesEmployee;
   });
-  
-  const selectedCertificate = certificatePreview ? getCertificate(certificatePreview) : null;
-  
+
+  // Get unique employees from certificates
+  const uniqueEmployees = [
+    ...new Map(
+      certificates
+        .filter((cert) => cert.employeeId && cert.employeeName)
+        .map((cert) => [
+          cert.employeeId,
+          {
+            id: cert.employeeId,
+            name: cert.employeeName,
+            photo: cert.employeePhoto,
+          },
+        ])
+    ).values(),
+  ];
+
+  // Get certificates for a specific employee
+  const getEmployeeCertificates = (employeeId: string) => {
+    return certificates.filter((cert) => cert.employeeId === employeeId);
+  };
+
+  // Stats for dashboard
+  const validCount = certificates.filter((cert) => cert.status === "valid").length;
+  const expiringCount = certificates.filter((cert) => cert.status === "expiring").length;
+  const expiredCount = certificates.filter((cert) => cert.status === "expired").length;
+  const totalCertificates = certificates.length;
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "valid":
+        return (
+          <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
+            Válido
+          </Badge>
+        );
+      case "expired":
+        return <Badge variant="destructive">Expirado</Badge>;
+      case "expiring":
+        return <Badge variant="secondary">Expirando</Badge>;
+      default:
+        return <Badge variant="outline">Indeterminado</Badge>;
+    }
+  };
+
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-      
-      <div className="flex-1 flex flex-col overflow-hidden lg:pl-64">
-        <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-        
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar isOpen={isMenuOpen} />
+      <div className="flex-1">
+        <Header showMenuToggle={true} onMenuToggle={toggleMenu} />
+        <main className="p-4 md:p-6 max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Certificados</h1>
-              <p className="text-gray-600">Gerencie todos os certificados da empresa</p>
+              <h1 className="text-2xl font-bold">Gerenciamento de Certificados</h1>
+              <p className="text-gray-600">Visualize e gerencie os certificados da equipe</p>
             </div>
-            
-            <Button 
-              onClick={() => navigate('/admin/certificates/new')}
-              className="bg-industrial-blue hover:bg-industrial-blue/90 btn-hover"
+            <Button
+              className="mt-4 md:mt-0"
+              onClick={() => navigate("/admin/certificates/new")}
             >
-              <Plus size={18} className="mr-2" />
-              Novo Certificado
+              <Plus className="mr-1" size={18} /> Novo Certificado
             </Button>
           </div>
-          
+
+          {/* Dashboard Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Total de Certificados</CardDescription>
+                <CardTitle>{totalCertificates}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FileCheck className="text-gray-400" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Certificados Válidos</CardDescription>
+                <CardTitle className="text-green-600">{validCount}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ListCheck className="text-green-600" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Expirando</CardDescription>
+                <CardTitle className="text-amber-500">{expiringCount}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ListCheck className="text-amber-500" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Expirados</CardDescription>
+                <CardTitle className="text-red-600">{expiredCount}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ListCheck className="text-red-600" />
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Filters */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
               <Input
-                placeholder="Buscar certificados ou colaboradores..."
+                placeholder="Buscar certificados..."
                 className="pl-10"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="valid">Válidos</SelectItem>
-                <SelectItem value="expiring">Expirando</SelectItem>
-                <SelectItem value="expired">Expirados</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-4">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os Status</SelectItem>
+                  <SelectItem value="valid">Válidos</SelectItem>
+                  <SelectItem value="expiring">Expirando</SelectItem>
+                  <SelectItem value="expired">Expirados</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={employeeFilter} onValueChange={setEmployeeFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Colaborador" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos Colaboradores</SelectItem>
+                  {uniqueEmployees.map((employee) => (
+                    <SelectItem key={employee.id} value={employee.id}>
+                      {employee.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          
-          {/* Certificates Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredCertificates.length > 0 ? (
-              filteredCertificates.map((cert) => (
-                <Dialog key={cert.id}>
-                  <DialogTrigger asChild>
-                    <div onClick={() => setCertificatePreview(cert.id)}>
-                      <CertificateCard 
-                        {...cert} 
-                        showEmployee={true}
-                      />
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Pré-visualização do Certificado</DialogTitle>
-                    </DialogHeader>
-                    {selectedCertificate && (
-                      <Tabs defaultValue="card" className="w-full">
-                        <TabsList className="grid grid-cols-2">
-                          <TabsTrigger value="card">Carteirinha</TabsTrigger>
-                          <TabsTrigger value="qr">QR Code</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="card" className="mt-4">
-                          <div className="border rounded-lg overflow-hidden bg-white p-4">
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center">
-                                <div className="h-10 w-10 rounded-full bg-industrial-blue flex items-center justify-center">
-                                  <div className="h-6 w-6 rounded-full bg-industrial-yellow"></div>
-                                </div>
-                                <h3 className="ml-2 font-semibold text-lg">Carteira Digital</h3>
-                              </div>
-                              <div className="bg-gradient-to-r from-industrial-blue to-blue-700 text-white px-3 py-1 rounded-full text-xs font-medium">
-                                Certificado
-                              </div>
+
+          {/* Lista de Colaboradores com opção de gerar carteirinha */}
+          {employeeFilter !== "all" && (
+            <div className="mb-6">
+              {uniqueEmployees
+                .filter(emp => emp.id === employeeFilter)
+                .map(employee => {
+                  const employeeCertificates = getEmployeeCertificates(employee.id);
+                  return (
+                    <Card key={employee.id} className="mb-4">
+                      <CardHeader>
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center">
+                            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 mr-3">
+                              {employee.photo && (
+                                <img
+                                  src={employee.photo}
+                                  alt={employee.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              )}
                             </div>
-                            
-                            <div className="flex mb-4">
-                              <div className="h-20 w-20 rounded bg-gray-200 flex-shrink-0">
-                                {selectedCertificate.employeePhoto && (
-                                  <img 
-                                    src={selectedCertificate.employeePhoto} 
-                                    alt={selectedCertificate.employeeName} 
-                                    className="h-full w-full object-cover rounded"
+                            <div>
+                              <CardTitle className="text-lg">{employee.name}</CardTitle>
+                              <CardDescription>ID: {employee.id}</CardDescription>
+                            </div>
+                          </div>
+                          <EmployeeCard
+                            name={employee.name}
+                            id={employee.id}
+                            photo={employee.photo}
+                            certificates={employeeCertificates}
+                          />
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  );
+                })}
+            </div>
+          )}
+
+          {/* Certificates Table */}
+          <Card className="overflow-hidden">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Título</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Colaborador</TableHead>
+                      <TableHead>Emissão</TableHead>
+                      <TableHead>Validade</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCertificates.length > 0 ? (
+                      filteredCertificates.map((cert) => (
+                        <TableRow key={cert.id}>
+                          <TableCell className="font-medium">{cert.title}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="bg-blue-100 text-blue-800">
+                              {cert.type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 mr-2">
+                                {cert.employeePhoto && (
+                                  <img
+                                    src={cert.employeePhoto}
+                                    alt={cert.employeeName}
+                                    className="w-full h-full object-cover"
                                   />
                                 )}
                               </div>
-                              <div className="ml-3">
-                                <h4 className="font-semibold">{selectedCertificate.employeeName}</h4>
-                                <p className="text-sm text-gray-600">ID: {selectedCertificate.id}</p>
-                                <div className={`text-xs mt-1 inline-block px-2 py-1 rounded-full ${
-                                  selectedCertificate.status === "valid" 
-                                    ? "bg-green-100 text-green-800" 
-                                    : selectedCertificate.status === "expired"
-                                      ? "bg-red-100 text-red-800"
-                                      : "bg-amber-100 text-amber-800"
-                                }`}>
-                                  {selectedCertificate.status === "valid" 
-                                    ? "Válido" 
-                                    : selectedCertificate.status === "expired"
-                                      ? "Expirado"
-                                      : "Expirando"}
-                                </div>
-                              </div>
+                              {cert.employeeName}
                             </div>
-                            
-                            <div className="border-t pt-3 mb-3">
-                              <h5 className="text-sm font-medium mb-1">Certificado:</h5>
-                              <p className="text-sm">{selectedCertificate.title}</p>
-                            </div>
-                            
-                            <div className="flex justify-between text-sm">
-                              <div>
-                                <p className="text-gray-600">Emissão:</p>
-                                <p>{new Date(selectedCertificate.issuedDate).toLocaleDateString()}</p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-gray-600">Validade:</p>
-                                <p>{new Date(selectedCertificate.expiryDate).toLocaleDateString()}</p>
-                              </div>
-                            </div>
-                            
-                            <div className="mt-4 flex justify-center">
-                              <img 
-                                src={selectedCertificate.qrCode} 
-                                alt="QR Code" 
-                                className="h-24 w-24"
-                              />
-                            </div>
-                          </div>
-                        </TabsContent>
-                        <TabsContent value="qr">
-                          <div className="flex flex-col items-center">
-                            <img 
-                              src={selectedCertificate.qrCode} 
-                              alt="QR Code" 
-                              className="h-48 w-48"
-                            />
-                            <p className="mt-4 text-sm text-center text-gray-600">
-                              Escaneie este QR Code para ver o certificado
-                            </p>
-                            <div className="mt-4 flex gap-2">
-                              <Button variant="outline">Imprimir</Button>
-                              <Button>Compartilhar</Button>
-                            </div>
-                          </div>
-                        </TabsContent>
-                      </Tabs>
+                          </TableCell>
+                          <TableCell>
+                            {format(new Date(cert.issuedDate), "dd/MM/yyyy")}
+                          </TableCell>
+                          <TableCell
+                            className={
+                              cert.status === "valid"
+                                ? "text-green-600"
+                                : cert.status === "expired"
+                                ? "text-red-600"
+                                : "text-amber-600"
+                            }
+                          >
+                            {format(new Date(cert.expiryDate), "dd/MM/yyyy")}
+                          </TableCell>
+                          <TableCell>{getStatusBadge(cert.status)}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`/certificate/${cert.id}`, "_blank")}
+                            >
+                              <Eye size={16} />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-6">
+                          Nenhum certificado encontrado.
+                        </TableCell>
+                      </TableRow>
                     )}
-                  </DialogContent>
-                </Dialog>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-8">
-                <p className="text-gray-500">Nenhum certificado encontrado.</p>
+                  </TableBody>
+                </Table>
               </div>
-            )}
-          </div>
+            </CardContent>
+          </Card>
         </main>
       </div>
     </div>
