@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CertificateProvider } from "@/contexts/CertificateContext";
 
@@ -54,53 +54,51 @@ const App = () => (
         <CertificateProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Login />} />
-              
-              {/* Admin Routes */}
-              <Route 
-                path="/admin/dashboard" 
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/admin/certificates" 
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <CertificatesManagement />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/admin/certificates/new" 
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <NewCertificate />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Employee Routes */}
-              <Route 
-                path="/employee/certificates" 
-                element={
-                  <ProtectedRoute requiredRole="employee">
-                    <EmployeeCertificates />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Public Certificate View */}
-              <Route path="/certificate/:id" element={<PublicCertificate />} />
-              
-              {/* Not Found */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            
+            {/* Admin Routes */}
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/certificates" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <CertificatesManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/certificates/new" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <NewCertificate />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Employee Routes */}
+            <Route 
+              path="/employee/certificates" 
+              element={
+                <ProtectedRoute requiredRole="employee">
+                  <EmployeeCertificates />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Public Certificate View */}
+            <Route path="/certificate/:id" element={<PublicCertificate />} />
+            
+            {/* Not Found */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </CertificateProvider>
       </AuthProvider>
     </TooltipProvider>
