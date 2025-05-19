@@ -15,7 +15,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Certificate, Badge as CertificateBadge } from "lucide-react";
+import { FileText, Award, Badge as CertificateBadge } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
@@ -129,7 +129,7 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="w-full" variant="outline">
-          <Certificate className="mr-2" size={18} />
+          <Award className="mr-2" size={18} />
           Gerar Carteirinha
         </Button>
       </DialogTrigger>
@@ -153,13 +153,13 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
                   <p className="text-sm text-muted-foreground">ID: {id}</p>
                   <div className="flex gap-2 mt-2">
                     <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-                      Válidos: {validCertificates}
+                      Válidos: {certificates.filter(cert => cert.status === "valid").length}
                     </Badge>
                     <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
-                      Expirando: {expiringCertificates}
+                      Expirando: {certificates.filter(cert => cert.status === "expiring").length}
                     </Badge>
                     <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">
-                      Expirados: {expiredCertificates}
+                      Expirados: {certificates.filter(cert => cert.status === "expired").length}
                     </Badge>
                   </div>
                 </div>

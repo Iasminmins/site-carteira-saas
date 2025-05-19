@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -108,7 +107,7 @@ const CertificatesManagement = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar isOpen={isMenuOpen} />
+      <Sidebar isOpen={isMenuOpen} toggleSidebar={toggleMenu} />
       <div className="flex-1">
         <Header showMenuToggle={true} onMenuToggle={toggleMenu} />
         <main className="p-4 md:p-6 max-w-7xl mx-auto">
