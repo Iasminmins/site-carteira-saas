@@ -63,23 +63,25 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
           <head>
             <title>Carteirinha Profissional - ${name}</title>
             <style>
-              @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+              @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&display=swap');
               body { 
-                font-family: 'Roboto', sans-serif; 
+                font-family: 'Open Sans', Arial, sans-serif; 
                 margin: 0; 
                 padding: 0; 
                 background-color: #f8f8f8;
               }
               .card-container {
-                width: 85.6mm; 
-                height: 54mm;
+                width: 10.6cm; 
+                height: 6.6cm;
                 margin: 20px auto;
                 background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                border-radius: 10px;
+                border-radius: 8px;
                 box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
                 overflow: hidden;
                 position: relative;
                 color: #333;
+                padding: 0.5cm;
+                box-sizing: border-box;
               }
               .card-header {
                 background: linear-gradient(90deg, #0A2463 0%, #3E92CC 100%);
@@ -130,7 +132,7 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
                 flex: 1;
               }
               .name {
-                font-size: 14px;
+                font-size: 14pt;
                 font-weight: 700;
                 margin: 0 0 5px 0;
               }
@@ -156,18 +158,24 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
                 padding-bottom: 3px;
               }
               .certificate-list {
-                font-size: 10px;
+                font-size: 10pt;
               }
               .certificate-item {
                 display: flex;
                 justify-content: space-between;
-                margin-bottom: 3px;
+                margin-bottom: 8px;
+                border-bottom: 1px dotted #ccc;
+                padding-bottom: 4px;
               }
               .certificate-name {
                 font-weight: 500;
+                max-width: 70%;
+                line-height: 1.3;
+                word-wrap: break-word;
               }
               .certificate-validity {
                 color: #555;
+                text-align: right;
               }
               .certificate-valid { color: #2e7d32; }
               .certificate-expiring { color: #ed6c02; }
@@ -219,8 +227,29 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
                   margin: 0;
                 }
                 @page {
-                  size: 90mm 60mm;
+                  size: 11cm 7cm;
                   margin: 0;
+                }
+              }
+              
+              /* Responsividade para versão digital */
+              @media screen and (max-width: 600px) {
+                .card-container {
+                  width: 100%;
+                  height: auto;
+                  margin: 10px 0;
+                  padding: 0.3cm;
+                }
+                .personal-info {
+                  flex-direction: column;
+                }
+                .photo {
+                  width: 80px;
+                  height: 100px;
+                  margin: 0 auto 10px;
+                }
+                .info {
+                  text-align: center;
                 }
               }
             </style>
@@ -272,7 +301,7 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
               </div>
               
               <div class="card-footer">
-                <img src="${`https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${id}`}" alt="QR Code" class="qrcode">
+                <img src="${`https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${window.location.origin}/certificate/${id}`}" alt="QR Code" class="qrcode">
                 <div class="footer-info">
                   <p>Carteirinha emitida em: ${new Date().toLocaleDateString('pt-BR')}</p>
                   <p>Verifique a autenticidade pelo QR Code</p>
@@ -395,4 +424,3 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
     </Dialog>
   );
 }
-

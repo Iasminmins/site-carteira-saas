@@ -30,7 +30,7 @@ import {
   TabsTrigger 
 } from "@/components/ui/tabs";
 import { Lock, User, UserCircle2, Building2 } from "lucide-react";
-import { Radio, RadioGroup } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -138,18 +138,16 @@ export default function Login() {
                               className="flex space-x-4"
                             >
                               <div className="flex items-center space-x-2">
-                                <Radio
+                                <RadioGroupItem
                                   value="admin"
                                   id="admin"
-                                  checked={field.value === "admin"}
                                 />
                                 <Label htmlFor="admin">Administrador</Label>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <Radio
+                                <RadioGroupItem
                                   value="employee"
                                   id="employee"
-                                  checked={field.value === "employee"}
                                 />
                                 <Label htmlFor="employee">Colaborador</Label>
                               </div>

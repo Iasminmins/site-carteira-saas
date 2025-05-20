@@ -52,9 +52,9 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         onClick={toggleSidebar}
       />
       <aside 
-        className={`${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} fixed lg:static top-0 left-0 z-30 h-screen bg-industrial-blue text-white transition-transform duration-300 ease-in-out w-64 flex flex-col`}
+        className={`${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} fixed top-0 left-0 z-30 h-screen bg-industrial-blue text-white transition-transform duration-300 ease-in-out w-64 flex flex-col overflow-y-auto`}
       >
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
+        <div className="flex items-center justify-between p-4 border-b border-white/10 sticky top-0 bg-industrial-blue">
           <div className="flex items-center">
             <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center">
               <div className="h-5 w-5 rounded-full bg-industrial-yellow"></div>
@@ -71,7 +71,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
           </Button>
         </div>
         
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-2">
             {menuItems.map((item) => (
               <li key={item.path}>
@@ -93,7 +93,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
           </ul>
         </nav>
         
-        <div className="p-4 mt-auto">
+        <div className="p-4 mt-auto sticky bottom-0 bg-industrial-blue">
           <div className="bg-white/10 rounded-lg p-3 text-sm">
             <p className="font-medium">Carteira Digital</p>
             <p className="text-xs opacity-70">v1.0.0</p>

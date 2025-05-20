@@ -2,7 +2,6 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 interface CertificateCardProps {
   id: string;
@@ -11,7 +10,7 @@ interface CertificateCardProps {
   issuedDate: Date;
   expiryDate: Date;
   status: "valid" | "expired" | "expiring";
-  qrCode: string;
+  qrCode?: string;
   employeeName?: string;
   employeePhoto?: string;
   showEmployee?: boolean;
@@ -80,7 +79,7 @@ export function CertificateCard({
       </CardContent>
       <CardFooter>
         <div className="flex-1 flex justify-center items-center py-2">
-          <img src={qrCode} alt="QR Code" className="h-20 w-20" />
+          {qrCode && <img src={qrCode} alt="QR Code" className="h-20 w-20" />}
         </div>
       </CardFooter>
     </Card>
