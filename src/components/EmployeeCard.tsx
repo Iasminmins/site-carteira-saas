@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   Card, 
   CardContent,
@@ -15,7 +16,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { FileText, Award, Badge as CertificateBadge } from "lucide-react";
+import { FileText, Award, Badge as CertificateBadge, IdCard } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
@@ -35,17 +36,23 @@ interface EmployeeCardProps {
 
 export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   
   const validCertificates = certificates.filter(cert => cert.status === "valid").length;
   const expiringCertificates = certificates.filter(cert => cert.status === "expiring").length;
   const expiredCertificates = certificates.filter(cert => cert.status === "expired").length;
   
-  // Formatar data para exibição
+  // Format date for display
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('pt-BR');
   };
   
-  // Função para imprimir a carteirinha
+  // Navigate to employee details
+  const handleViewDetails = () => {
+    navigate(`/admin/employees/${id}`);
+  };
+  
+  // Function to print the card
   const handlePrint = () => {
     const content = document.getElementById('employee-card-print');
     const printWindow = window.open('', '_blank');
@@ -54,68 +61,223 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
       printWindow.document.write(`
         <html>
           <head>
-            <title>Carteirinha de Certificados - ${name}</title>
+            <title>Carteirinha Profissional - ${name}</title>
             <style>
-              body { font-family: Arial, sans-serif; padding: 20px; }
-              .card { border: 1px solid #ccc; padding: 20px; max-width: 800px; margin: 0 auto; }
-              .header { display: flex; align-items: center; margin-bottom: 20px; }
-              .avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-right: 20px; }
-              .avatar-fallback { width: 100px; height: 100px; border-radius: 50%; background-color: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: #64748b; margin-right: 20px; }
-              .info { flex: 1; }
-              .name { font-size: 24px; font-weight: bold; margin: 0; }
-              .id { font-size: 14px; color: #64748b; margin: 5px 0; }
-              .status { display: flex; gap: 10px; margin-top: 10px; }
-              .status-item { padding: 5px 10px; border-radius: 5px; font-size: 12px; }
-              .valid { background-color: #dcfce7; color: #166534; }
-              .expiring { background-color: #fef3c7; color: #92400e; }
-              .expired { background-color: #fee2e2; color: #b91c1c; }
-              .certificates { margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px; }
-              .certificate { padding: 10px; border: 1px solid #e2e8f0; margin-bottom: 10px; border-radius: 5px; }
-              .certificate-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
-              .certificate-title { font-weight: bold; margin: 0; }
-              .certificate-type { background-color: #e0e7ff; color: #4338ca; padding: 2px 6px; border-radius: 3px; font-size: 12px; }
-              .certificate-dates { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; }
-              .status-badge { font-size: 12px; padding: 2px 6px; border-radius: 3px; }
-              .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #64748b; }
+              @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+              body { 
+                font-family: 'Roboto', sans-serif; 
+                margin: 0; 
+                padding: 0; 
+                background-color: #f8f8f8;
+              }
+              .card-container {
+                width: 85.6mm; 
+                height: 54mm;
+                margin: 20px auto;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 10px;
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                position: relative;
+                color: #333;
+              }
+              .card-header {
+                background: linear-gradient(90deg, #0A2463 0%, #3E92CC 100%);
+                padding: 12px;
+                display: flex;
+                align-items: center;
+                color: white;
+              }
+              .company-logo {
+                width: 40px;
+                height: 40px;
+                background: #ffcc00;
+                border-radius: 50%;
+                margin-right: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+              }
+              .card-title {
+                margin: 0;
+                font-size: 16px;
+                font-weight: 700;
+              }
+              .card-subtitle {
+                margin: 0;
+                font-size: 11px;
+                opacity: 0.9;
+              }
+              .card-body {
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+              }
+              .personal-info {
+                display: flex;
+                margin-bottom: 15px;
+              }
+              .photo {
+                width: 90px;
+                height: 110px;
+                background-color: #e0e0e0;
+                border: 1px solid #ccc;
+                margin-right: 15px;
+                object-fit: cover;
+              }
+              .info {
+                flex: 1;
+              }
+              .name {
+                font-size: 14px;
+                font-weight: 700;
+                margin: 0 0 5px 0;
+              }
+              .id-number {
+                font-size: 11px;
+                color: #555;
+                margin: 0 0 8px 0;
+              }
+              .validity-section {
+                background-color: #f0f0f0;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 8px;
+                margin-bottom: 5px;
+              }
+              .validity-title {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                margin: 0 0 5px 0;
+                color: #555;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 3px;
+              }
+              .certificate-list {
+                font-size: 10px;
+              }
+              .certificate-item {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 3px;
+              }
+              .certificate-name {
+                font-weight: 500;
+              }
+              .certificate-validity {
+                color: #555;
+              }
+              .certificate-valid { color: #2e7d32; }
+              .certificate-expiring { color: #ed6c02; }
+              .certificate-expired { color: #d32f2f; }
+              .card-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 12px 12px;
+              }
+              .qrcode {
+                width: 70px;
+                height: 70px;
+              }
+              .footer-info {
+                font-size: 9px;
+                color: #777;
+                text-align: right;
+              }
+              .watermark {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 80px;
+                opacity: 0.03;
+                font-weight: 700;
+                pointer-events: none;
+                color: #000;
+                z-index: 0;
+                white-space: nowrap;
+              }
+              .hologram {
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+                width: 25px;
+                height: 25px;
+                background: linear-gradient(45deg, #f3f3f3, #e0e0e0, #f3f3f3);
+                border-radius: 50%;
+                opacity: 0.7;
+              }
+              @media print {
+                body { background: none; }
+                .card-container { 
+                  box-shadow: none;
+                  border: 1px solid #ddd;
+                  page-break-inside: avoid;
+                  margin: 0;
+                }
+                @page {
+                  size: 90mm 60mm;
+                  margin: 0;
+                }
+              }
             </style>
           </head>
-          <body onload="window.print()">
-            <div class="card">
-              <div class="header">
-                ${photo 
-                  ? `<img src="${photo}" alt="${name}" class="avatar" />`
-                  : `<div class="avatar-fallback">${name.split(' ').map(n => n[0]).join('')}</div>`
-                }
-                <div class="info">
-                  <h1 class="name">${name}</h1>
-                  <p class="id">ID: ${id}</p>
-                  <div class="status">
-                    <span class="status-item valid">Válidos: ${validCertificates}</span>
-                    <span class="status-item expiring">Expirando: ${expiringCertificates}</span>
-                    <span class="status-item expired">Expirados: ${expiredCertificates}</span>
+          <body onload="setTimeout(function() { window.print(); }, 500)">
+            <div class="card-container">
+              <div class="watermark">CERTIFICADO</div>
+              <div class="card-header">
+                <div class="company-logo">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A2463" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h1 class="card-title">CARTEIRINHA PROFISSIONAL</h1>
+                  <p class="card-subtitle">Certificação de Treinamentos Industriais</p>
+                </div>
+              </div>
+              
+              <div class="card-body">
+                <div class="personal-info">
+                  <img src="${photo || 'https://via.placeholder.com/90x110?text=Foto'}" alt="${name}" class="photo">
+                  <div class="info">
+                    <h2 class="name">${name}</h2>
+                    <p class="id-number">ID: ${id}</p>
+                    
+                    <div class="validity-section">
+                      <h3 class="validity-title">Treinamentos Realizados</h3>
+                      <div class="certificate-list">
+                        ${certificates.slice(0, 6).map(cert => `
+                          <div class="certificate-item">
+                            <span class="certificate-name">${cert.type} - ${cert.title.length > 30 ? cert.title.substring(0, 30) + '...' : cert.title}</span>
+                            <span class="certificate-validity ${
+                              cert.status === 'valid' ? 'certificate-valid' : 
+                              cert.status === 'expired' ? 'certificate-expired' : 
+                              'certificate-expiring'
+                            }">
+                              ${formatDate(cert.expiryDate)}
+                            </span>
+                          </div>
+                        `).join('')}
+                        ${certificates.length > 6 ? `<div class="certificate-item">...(${certificates.length - 6} mais)</div>` : ''}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="certificates">
-                <h2>Certificados</h2>
-                ${certificates.map(cert => `
-                  <div class="certificate">
-                    <div class="certificate-header">
-                      <p class="certificate-title">${cert.title}</p>
-                      <span class="certificate-type">${cert.type}</span>
-                    </div>
-                    <div class="certificate-dates">
-                      <span>Emissão: ${formatDate(cert.issuedDate)}</span>
-                      <span>Validade: ${formatDate(cert.expiryDate)}</span>
-                      <span class="status-badge ${cert.status === 'valid' ? 'valid' : cert.status === 'expired' ? 'expired' : 'expiring'}">
-                        ${cert.status === 'valid' ? 'Válido' : cert.status === 'expired' ? 'Expirado' : 'Expirando'}
-                      </span>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-              <div class="footer">
-                <p>Carteirinha gerada em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+              
+              <div class="card-footer">
+                <img src="${certificates[0]?.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${id}`}" alt="QR Code" class="qrcode">
+                <div class="footer-info">
+                  <p>Carteirinha emitida em: ${new Date().toLocaleDateString('pt-BR')}</p>
+                  <p>Verifique a autenticidade pelo QR Code</p>
+                </div>
+                <div class="hologram"></div>
               </div>
             </div>
           </body>
@@ -129,7 +291,7 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="w-full" variant="outline">
-          <Award className="mr-2" size={18} />
+          <IdCard className="mr-2" size={18} />
           Gerar Carteirinha
         </Button>
       </DialogTrigger>

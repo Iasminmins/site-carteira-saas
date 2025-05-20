@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import CertificatesManagement from "./pages/admin/CertificatesManagement";
 import EmployeesManagement from "./pages/admin/EmployeesManagement";
+import EmployeeDetails from "./pages/admin/EmployeeDetails";
 import Settings from "./pages/admin/Settings";
 import NewCertificate from "./pages/admin/NewCertificate";
 import EmployeeCertificates from "./pages/employee/EmployeeCertificates";
@@ -89,6 +90,14 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <EmployeesManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/employees/:id" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <EmployeeDetails />
                 </ProtectedRoute>
               } 
             />

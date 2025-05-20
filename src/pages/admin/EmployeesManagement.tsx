@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { useCertificates } from "@/contexts/CertificateContext";
@@ -42,6 +43,7 @@ const EmployeesManagement = () => {
   const [showAddEmployee, setShowAddEmployee] = useState(false);
   const [newEmployeeName, setNewEmployeeName] = useState("");
   const [newEmployeeId, setNewEmployeeId] = useState("");
+  const navigate = useNavigate();
 
   // Filter employees based on search query
   const filteredEmployees = employees.filter((emp) =>
@@ -67,6 +69,10 @@ const EmployeesManagement = () => {
       title: "Lista atualizada",
       description: "A lista de colaboradores foi atualizada com sucesso.",
     });
+  };
+
+  const handleViewDetails = (employeeId: string) => {
+    navigate(`/admin/employees/${employeeId}`);
   };
 
   const handleAddEmployee = () => {
@@ -237,7 +243,12 @@ const EmployeesManagement = () => {
                         </div>
                         
                         <div className="p-4 flex flex-col space-y-2">
-                          <Button variant="outline" size="sm" className="w-full">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full"
+                            onClick={() => handleViewDetails(emp.id)}
+                          >
                             Ver Detalhes
                             <ChevronRight size={16} className="ml-2" />
                           </Button>

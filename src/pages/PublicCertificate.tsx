@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Printer, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const PublicCertificate = () => {
@@ -42,20 +42,33 @@ const PublicCertificate = () => {
   };
   
   const { label, className } = getStatusConfig(certificate.status);
+
+  const handlePrint = () => {
+    window.print();
+  };
   
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto mt-8">
-        <Button 
-          variant="ghost" 
-          onClick={() => window.close()}
-          className="mb-4"
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          Voltar
-        </Button>
+        <div className="flex justify-between items-center mb-4">
+          <Button 
+            variant="ghost" 
+            onClick={() => window.history.back()}
+          >
+            <ArrowLeft size={18} className="mr-2" />
+            Voltar
+          </Button>
+          
+          <Button
+            variant="outline"
+            onClick={handlePrint}
+          >
+            <Printer size={18} className="mr-2" />
+            Imprimir
+          </Button>
+        </div>
         
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden border animate-fade-in">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden border animate-fade-in print:shadow-none print:border">
           <div className="bg-industrial-blue text-white p-4">
             <div className="flex items-center">
               <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center">
@@ -119,7 +132,10 @@ const PublicCertificate = () => {
             </div>
             
             <div className="flex justify-center mb-4">
-              <img src={certificate.qrCode} alt="QR Code" className="h-32 w-32" />
+              <div className="relative">
+                <img src={certificate.qrCode} alt="QR Code" className="h-32 w-32" />
+                <QrCode size={18} className="absolute bottom-2 right-2 text-industrial-blue" />
+              </div>
             </div>
             
             <div className="text-center text-xs text-gray-500">
