@@ -18,6 +18,8 @@ import NewCertificate from "./pages/admin/NewCertificate";
 import EmployeeCertificates from "./pages/employee/EmployeeCertificates";
 import PublicCertificate from "./pages/PublicCertificate";
 import NotFound from "./pages/NotFound";
+import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
+import CompanyManagement from "./pages/superadmin/CompanyManagement";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +29,7 @@ const ProtectedRoute = ({
   requiredRole 
 }: { 
   children: React.ReactNode, 
-  requiredRole?: "admin" | "employee" 
+  requiredRole?: "superadmin" | "admin" | "employee" 
 }) => {
   // For demo purposes, we're just checking if user exists in local storage
   // In a real app, this would validate the JWT token or session
@@ -40,7 +42,9 @@ const ProtectedRoute = ({
   
   if (requiredRole && user.role !== requiredRole) {
     // Redirect to appropriate dashboard based on role
-    if (user.role === "admin") {
+    if (user.role === "superadmin") {
+      return <Navigate to="/superadmin/dashboard" replace />;
+    } else if (user.role === "admin") {
       return <Navigate to="/admin/dashboard" replace />;
     } else {
       return <Navigate to="/employee/certificates" replace />;
@@ -59,6 +63,24 @@ const App = () => (
           <Sonner />
           <Routes>
             <Route path="/" element={<Login />} />
+            
+            {/* SuperAdmin Routes */}
+            <Route 
+              path="/superadmin/dashboard" 
+              element={
+                <ProtectedRoute requiredRole="superadmin">
+                  <SuperAdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/superadmin/companies" 
+              element={
+                <ProtectedRoute requiredRole="superadmin">
+                  <CompanyManagement />
+                </ProtectedRoute>
+              } 
+            />
             
             {/* Admin Routes */}
             <Route 

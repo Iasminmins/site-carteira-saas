@@ -13,50 +13,88 @@ type Certificate = {
   employeeId?: string;
   employeeName?: string;
   employeePhoto?: string;
+  companyId?: string; // Added for multi-tenancy
 };
 
 type Employee = {
   id: string;
   name: string;
   photo: string;
+  companyId?: string; // Added for multi-tenancy
 };
+
+type Company = {
+  id: string;
+  name: string;
+  domain: string;
+  logo?: string;
+  createdAt: Date;
+  isActive: boolean;
+}
 
 type CertificateContextType = {
   certificates: Certificate[];
   employees: Employee[];
+  companies: Company[]; // Added for multi-tenancy
   isLoading: boolean;
   addCertificate: (certificate: Omit<Certificate, "id" | "qrCode">) => void;
   getCertificate: (id: string) => Certificate | undefined;
   getEmployeeCertificates: (employeeId: string) => Certificate[];
-  getFilteredCertificates: (status?: string) => Certificate[];
+  getFilteredCertificates: (status?: string, companyId?: string) => Certificate[];
+  getCurrentCompany: () => Company | undefined;
 };
+
+// Mock company data for multi-tenancy
+const mockCompanies: Company[] = [
+  {
+    id: "1",
+    name: "Industrial Tech",
+    domain: "industrialtech.meusistema.com",
+    logo: "https://via.placeholder.com/150?text=IT",
+    createdAt: new Date('2023-01-01'),
+    isActive: true
+  },
+  {
+    id: "2",
+    name: "Safety First Corp",
+    domain: "safetyfirst.meusistema.com",
+    logo: "https://via.placeholder.com/150?text=SF",
+    createdAt: new Date('2023-02-15'),
+    isActive: true
+  }
+];
 
 // Mock employee data
 const mockEmployees: Employee[] = [
   {
     id: "1",
     name: "João Silva",
-    photo: "https://i.pravatar.cc/150?img=3"
+    photo: "https://i.pravatar.cc/150?img=3",
+    companyId: "1"
   },
   {
     id: "2",
     name: "Carlos Oliveira",
-    photo: "https://i.pravatar.cc/150?img=12"
+    photo: "https://i.pravatar.cc/150?img=12",
+    companyId: "1"
   },
   {
     id: "3",
     name: "Ana Beatriz",
-    photo: "https://i.pravatar.cc/150?img=5"
+    photo: "https://i.pravatar.cc/150?img=5",
+    companyId: "1"
   },
   {
     id: "4",
     name: "Roberto Martins",
-    photo: "https://i.pravatar.cc/150?img=20"
+    photo: "https://i.pravatar.cc/150?img=20",
+    companyId: "2"
   },
   {
     id: "5",
     name: "Maria Santos",
-    photo: "https://i.pravatar.cc/150?img=9"
+    photo: "https://i.pravatar.cc/150?img=9",
+    companyId: "2"
   }
 ];
 
@@ -71,7 +109,8 @@ const mockCertificates: Certificate[] = [
     qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-001",
     employeeId: "2",
     employeeName: "Carlos Oliveira",
-    employeePhoto: "https://i.pravatar.cc/150?img=12"
+    employeePhoto: "https://i.pravatar.cc/150?img=12",
+    companyId: "1"
   },
   {
     id: "cert-002",
@@ -83,7 +122,8 @@ const mockCertificates: Certificate[] = [
     qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-002",
     employeeId: "2",
     employeeName: "Carlos Oliveira",
-    employeePhoto: "https://i.pravatar.cc/150?img=12"
+    employeePhoto: "https://i.pravatar.cc/150?img=12",
+    companyId: "1"
   },
   {
     id: "cert-003",
@@ -95,7 +135,8 @@ const mockCertificates: Certificate[] = [
     qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-003",
     employeeId: "2",
     employeeName: "Carlos Oliveira",
-    employeePhoto: "https://i.pravatar.cc/150?img=12"
+    employeePhoto: "https://i.pravatar.cc/150?img=12",
+    companyId: "1"
   },
   {
     id: "cert-004",
@@ -107,7 +148,8 @@ const mockCertificates: Certificate[] = [
     qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-004",
     employeeId: "2",
     employeeName: "Carlos Oliveira",
-    employeePhoto: "https://i.pravatar.cc/150?img=12"
+    employeePhoto: "https://i.pravatar.cc/150?img=12",
+    companyId: "1"
   },
   {
     id: "cert-005",
@@ -119,7 +161,8 @@ const mockCertificates: Certificate[] = [
     qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-005",
     employeeId: "3",
     employeeName: "Ana Beatriz",
-    employeePhoto: "https://i.pravatar.cc/150?img=5"
+    employeePhoto: "https://i.pravatar.cc/150?img=5",
+    companyId: "1"
   },
   {
     id: "cert-006",
@@ -131,7 +174,8 @@ const mockCertificates: Certificate[] = [
     qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-006",
     employeeId: "4", 
     employeeName: "Roberto Martins",
-    employeePhoto: "https://i.pravatar.cc/150?img=20"
+    employeePhoto: "https://i.pravatar.cc/150?img=20",
+    companyId: "2"
   }
 ];
 
@@ -141,6 +185,8 @@ export const CertificateProvider = ({ children }: { children: ReactNode }) => {
   const [certificates, setCertificates] = useState<Certificate[]>(mockCertificates);
   const [isLoading, setIsLoading] = useState(false);
   const [employees] = useState<Employee[]>(mockEmployees);
+  const [companies] = useState<Company[]>(mockCompanies);
+  const [currentCompanyId, setCurrentCompanyId] = useState<string>("1"); // Default to first company
 
   const addCertificate = (certificateData: Omit<Certificate, "id" | "qrCode">) => {
     setIsLoading(true);
@@ -153,7 +199,8 @@ export const CertificateProvider = ({ children }: { children: ReactNode }) => {
       const newCertificate: Certificate = {
         ...certificateData,
         id,
-        qrCode
+        qrCode,
+        companyId: currentCompanyId  // Assign to current company
       };
       
       setCertificates(prev => [...prev, newCertificate]);
@@ -170,12 +217,21 @@ export const CertificateProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getEmployeeCertificates = (employeeId: string) => {
-    return certificates.filter(cert => cert.employeeId === employeeId);
+    return certificates.filter(cert => 
+      cert.employeeId === employeeId && 
+      cert.companyId === currentCompanyId
+    );
   };
 
-  const getFilteredCertificates = (status?: string) => {
-    if (!status || status === "all") return certificates;
-    return certificates.filter(cert => cert.status === status);
+  const getFilteredCertificates = (status?: string, companyId: string = currentCompanyId) => {
+    let filtered = certificates.filter(cert => cert.companyId === companyId);
+    
+    if (!status || status === "all") return filtered;
+    return filtered.filter(cert => cert.status === status);
+  };
+
+  const getCurrentCompany = () => {
+    return companies.find(company => company.id === currentCompanyId);
   };
 
   return (
@@ -183,11 +239,13 @@ export const CertificateProvider = ({ children }: { children: ReactNode }) => {
       value={{ 
         certificates, 
         employees,
+        companies,
         isLoading, 
         addCertificate, 
         getCertificate,
         getEmployeeCertificates,
-        getFilteredCertificates
+        getFilteredCertificates,
+        getCurrentCompany
       }}
     >
       {children}

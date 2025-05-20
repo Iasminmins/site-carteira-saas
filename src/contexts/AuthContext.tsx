@@ -7,14 +7,15 @@ type User = {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "employee";
+  role: "superadmin" | "admin" | "employee";
   photo?: string;
+  companyId?: string;
 };
 
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string, role: "admin" | "employee") => void;
+  login: (email: string, password: string, role: "superadmin" | "admin" | "employee") => void;
   logout: () => void;
 };
 
@@ -33,22 +34,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = async (email: string, password: string, role: "admin" | "employee") => {
+  const login = async (email: string, password: string, role: "superadmin" | "admin" | "employee") => {
     setIsLoading(true);
     try {
       // Simulate API request
       setTimeout(() => {
         // Mock users for demo purposes
         if (email && password) {
-          let userData;
+          let userData: User;
           
-          if (role === "admin") {
+          if (role === "superadmin") {
+            userData = {
+              id: "super1",
+              name: "Roberto Mendes",
+              email: email,
+              role: "superadmin",
+              photo: "https://i.pravatar.cc/150?img=40"
+            };
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
+            toast.success("Login realizado com sucesso!");
+            navigate('/superadmin/dashboard');
+          } else if (role === "admin") {
             userData = {
               id: "1",
               name: "Amanda Silva",
               email: email,
               role: "admin",
-              photo: "https://i.pravatar.cc/150?img=32"
+              photo: "https://i.pravatar.cc/150?img=32",
+              companyId: "1"
             };
             localStorage.setItem('user', JSON.stringify(userData));
             setUser(userData);
@@ -60,7 +74,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               name: "Carlos Oliveira",
               email: email,
               role: "employee",
-              photo: "https://i.pravatar.cc/150?img=12"
+              photo: "https://i.pravatar.cc/150?img=12",
+              companyId: "1"
             };
             localStorage.setItem('user', JSON.stringify(userData));
             setUser(userData);

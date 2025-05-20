@@ -272,7 +272,7 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
               </div>
               
               <div class="card-footer">
-                <img src="${certificates[0]?.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${id}`}" alt="QR Code" class="qrcode">
+                <img src="${`https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${id}`}" alt="QR Code" class="qrcode">
                 <div class="footer-info">
                   <p>Carteirinha emitida em: ${new Date().toLocaleDateString('pt-BR')}</p>
                   <p>Verifique a autenticidade pelo QR Code</p>
@@ -395,3 +395,4 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
     </Dialog>
   );
 }
+
