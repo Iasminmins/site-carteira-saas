@@ -1,39 +1,13 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { useCertificates } from "@/contexts/CertificateContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { EmployeeCard } from "@/components/EmployeeCard";
-import { useMobile } from "@/hooks/use-mobile";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import {
-  Plus,
-  Search,
-  FileCheck,
-  ListCheck,
-  Eye,
-  Certificate
-} from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { CertificateCard } from "@/components/CertificateCard";
 import {
   Card,
   CardContent,
@@ -41,290 +15,262 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import {
+  FileText,
+  Plus,
+  Search,
+  RefreshCw,
+  User,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
+import { EmployeeCard } from "@/components/EmployeeCard";
 
 const CertificatesManagement = () => {
-  const navigate = useNavigate();
-  const { isMobile, isMenuOpen, toggleMenu } = useMobile();
-  const { certificates, getFilteredCertificates } = useCertificates();
-  const { user } = useAuth();
-
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [employeeFilter, setEmployeeFilter] = useState("all");
+  
+  const navigate = useNavigate();
+  const { certificates, employees } = useCertificates();
+  const { user } = useAuth();
+  const isMobile = useIsMobile();
+  const { toast } = useToast();
 
+  // Get unique certificate types
+  const certificateTypes = [...new Set(certificates.map((cert) => cert.type))];
+
+  // Get unique employees
+  const uniqueEmployees = [...new Set(certificates.map((cert) => cert.employeeId))];
+  const employeeList = employees.filter((emp) => uniqueEmployees.includes(emp.id));
+
+  // Filter certificates
   const filteredCertificates = certificates.filter((cert) => {
     const matchesSearch = cert.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || cert.status === statusFilter;
-    const matchesEmployee =
-      employeeFilter === "all" || cert.employeeId === employeeFilter;
+    const matchesType = typeFilter === "all" || cert.type === typeFilter;
+    const matchesEmployee = employeeFilter === "all" || cert.employeeId === employeeFilter;
 
-    return matchesSearch && matchesStatus && matchesEmployee;
+    return matchesSearch && matchesStatus && matchesType && matchesEmployee;
   });
 
-  // Get unique employees from certificates
-  const uniqueEmployees = [
-    ...new Map(
-      certificates
-        .filter((cert) => cert.employeeId && cert.employeeName)
-        .map((cert) => [
-          cert.employeeId,
-          {
-            id: cert.employeeId,
-            name: cert.employeeName,
-            photo: cert.employeePhoto,
-          },
-        ])
-    ).values(),
-  ];
-
-  // Get certificates for a specific employee
-  const getEmployeeCertificates = (employeeId: string) => {
-    return certificates.filter((cert) => cert.employeeId === employeeId);
+  const handleAddCertificate = () => {
+    navigate("/admin/certificates/new");
   };
 
-  // Stats for dashboard
-  const validCount = certificates.filter((cert) => cert.status === "valid").length;
-  const expiringCount = certificates.filter((cert) => cert.status === "expiring").length;
-  const expiredCount = certificates.filter((cert) => cert.status === "expired").length;
-  const totalCertificates = certificates.length;
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "valid":
-        return (
-          <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-            Válido
-          </Badge>
-        );
-      case "expired":
-        return <Badge variant="destructive">Expirado</Badge>;
-      case "expiring":
-        return <Badge variant="secondary">Expirando</Badge>;
-      default:
-        return <Badge variant="outline">Indeterminado</Badge>;
-    }
+  const handleRefresh = () => {
+    toast({
+      title: "Lista atualizada",
+      description: "Os certificados foram atualizados com sucesso.",
+    });
   };
+
+  const toggleMenu = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const selectedEmployee = employeeFilter !== "all" 
+    ? employees.find(emp => emp.id === employeeFilter)
+    : null;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar isOpen={isMenuOpen} toggleSidebar={toggleMenu} />
+      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleMenu} />
       <div className="flex-1">
-        <Header showMenuToggle={true} onMenuToggle={toggleMenu} />
+        <Header showMenuToggle={true} toggleSidebar={toggleMenu} />
         <main className="p-4 md:p-6 max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold">Gerenciamento de Certificados</h1>
-              <p className="text-gray-600">Visualize e gerencie os certificados da equipe</p>
+              <h1 className="text-2xl font-bold text-gray-900">Gerenciamento de Certificados</h1>
+              <p className="text-gray-600">Visualize e administre todos os certificados da empresa</p>
             </div>
-            <Button
-              className="mt-4 md:mt-0"
-              onClick={() => navigate("/admin/certificates/new")}
-            >
-              <Plus className="mr-1" size={18} /> Novo Certificado
-            </Button>
-          </div>
-
-          {/* Dashboard Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Total de Certificados</CardDescription>
-                <CardTitle>{totalCertificates}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FileCheck className="text-gray-400" />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Certificados Válidos</CardDescription>
-                <CardTitle className="text-green-600">{validCount}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ListCheck className="text-green-600" />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Expirando</CardDescription>
-                <CardTitle className="text-amber-500">{expiringCount}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ListCheck className="text-amber-500" />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Expirados</CardDescription>
-                <CardTitle className="text-red-600">{expiredCount}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ListCheck className="text-red-600" />
-              </CardContent>
-            </Card>
+            
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleRefresh}
+                className="h-10 w-10"
+                title="Atualizar Lista"
+              >
+                <RefreshCw size={18} />
+              </Button>
+              <Button
+                onClick={handleAddCertificate}
+                className="bg-industrial-blue hover:bg-industrial-blue/90"
+              >
+                <Plus size={18} className="mr-2" />
+                Novo Certificado
+              </Button>
+            </div>
           </div>
 
           {/* Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={18}
-              />
-              <Input
-                placeholder="Buscar certificados..."
-                className="pl-10"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-4">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Status</SelectItem>
-                  <SelectItem value="valid">Válidos</SelectItem>
-                  <SelectItem value="expiring">Expirando</SelectItem>
-                  <SelectItem value="expired">Expirados</SelectItem>
-                </SelectContent>
-              </Select>
+          <Card className="mb-6">
+            <CardHeader className="pb-3">
+              <CardTitle>Filtros</CardTitle>
+              <CardDescription>Filtre os certificados por diferentes critérios</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <Input
+                    placeholder="Buscar certificados..."
+                    className="pl-10"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
 
-              <Select value={employeeFilter} onValueChange={setEmployeeFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Colaborador" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos Colaboradores</SelectItem>
-                  {uniqueEmployees.map((employee) => (
-                    <SelectItem key={employee.id} value={employee.id}>
-                      {employee.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os Status</SelectItem>
+                    <SelectItem value="valid">Válidos</SelectItem>
+                    <SelectItem value="expiring">Expirando</SelectItem>
+                    <SelectItem value="expired">Expirados</SelectItem>
+                  </SelectContent>
+                </Select>
 
-          {/* Lista de Colaboradores com opção de gerar carteirinha */}
-          {employeeFilter !== "all" && (
-            <div className="mb-6">
-              {uniqueEmployees
-                .filter(emp => emp.id === employeeFilter)
-                .map(employee => {
-                  const employeeCertificates = getEmployeeCertificates(employee.id);
-                  return (
-                    <Card key={employee.id} className="mb-4">
-                      <CardHeader>
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center">
-                            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 mr-3">
-                              {employee.photo && (
-                                <img
-                                  src={employee.photo}
-                                  alt={employee.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              )}
-                            </div>
-                            <div>
-                              <CardTitle className="text-lg">{employee.name}</CardTitle>
-                              <CardDescription>ID: {employee.id}</CardDescription>
-                            </div>
-                          </div>
-                          <EmployeeCard
-                            name={employee.name}
-                            id={employee.id}
-                            photo={employee.photo}
-                            certificates={employeeCertificates}
-                          />
-                        </div>
-                      </CardHeader>
-                    </Card>
-                  );
-                })}
-            </div>
-          )}
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tipo de Certificado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os Tipos</SelectItem>
+                    {certificateTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-          {/* Certificates Table */}
-          <Card className="overflow-hidden">
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Título</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Colaborador</TableHead>
-                      <TableHead>Emissão</TableHead>
-                      <TableHead>Validade</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredCertificates.length > 0 ? (
-                      filteredCertificates.map((cert) => (
-                        <TableRow key={cert.id}>
-                          <TableCell className="font-medium">{cert.title}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="bg-blue-100 text-blue-800">
-                              {cert.type}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center">
-                              <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 mr-2">
-                                {cert.employeePhoto && (
-                                  <img
-                                    src={cert.employeePhoto}
-                                    alt={cert.employeeName}
-                                    className="w-full h-full object-cover"
-                                  />
-                                )}
-                              </div>
-                              {cert.employeeName}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {format(new Date(cert.issuedDate), "dd/MM/yyyy")}
-                          </TableCell>
-                          <TableCell
-                            className={
-                              cert.status === "valid"
-                                ? "text-green-600"
-                                : cert.status === "expired"
-                                ? "text-red-600"
-                                : "text-amber-600"
-                            }
-                          >
-                            {format(new Date(cert.expiryDate), "dd/MM/yyyy")}
-                          </TableCell>
-                          <TableCell>{getStatusBadge(cert.status)}</TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => window.open(`/certificate/${cert.id}`, "_blank")}
-                            >
-                              <Eye size={16} />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={7} className="text-center py-6">
-                          Nenhum certificado encontrado.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                <Select value={employeeFilter} onValueChange={setEmployeeFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Colaborador" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os Colaboradores</SelectItem>
+                    {employeeList.map((emp) => (
+                      <SelectItem key={emp.id} value={emp.id}>
+                        {emp.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
+
+          {/* Display employee card if filtered by employee */}
+          {selectedEmployee && (
+            <Card className="mb-6">
+              <CardHeader className="pb-3">
+                <CardTitle>Carteirinha do Colaborador</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <EmployeeCard 
+                  name={selectedEmployee.name}
+                  id={selectedEmployee.id}
+                  photo={selectedEmployee.photo}
+                  certificates={filteredCertificates}
+                />
+              </CardContent>
+            </Card>
+          )}
+          
+          <Tabs defaultValue="grid" className="w-full">
+            <div className="flex justify-between items-center mb-4">
+              <TabsList>
+                <TabsTrigger value="grid">Grid</TabsTrigger>
+                <TabsTrigger value="list">Lista</TabsTrigger>
+              </TabsList>
+              <Badge variant="outline" className="bg-blue-50">
+                {filteredCertificates.length} certificado(s)
+              </Badge>
+            </div>
+            
+            <TabsContent value="grid">
+              {filteredCertificates.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredCertificates.map((cert) => (
+                    <CertificateCard
+                      key={cert.id}
+                      {...cert}
+                      showEmployee={true}
+                      employeeName={employees.find((emp) => emp.id === cert.employeeId)?.name || ""}
+                      employeePhoto={employees.find((emp) => emp.id === cert.employeeId)?.photo || ""}
+                      onClick={() => window.open(`/certificate/${cert.id}`, '_blank')}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Card className="text-center p-8">
+                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">Nenhum certificado encontrado</h3>
+                  <p className="text-gray-500 mt-2">Tente ajustar os filtros ou adicionar novos certificados.</p>
+                </Card>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="list">
+              {/* List view */}
+              <Card>
+                {filteredCertificates.length > 0 ? (
+                  <div className="divide-y">
+                    {filteredCertificates.map((cert) => (
+                      <div key={cert.id} className="flex items-center p-4 hover:bg-gray-50 cursor-pointer" onClick={() => window.open(`/certificate/${cert.id}`, '_blank')}>
+                        <div className="mr-4">
+                          <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-200">
+                            <img 
+                              src={employees.find((emp) => emp.id === cert.employeeId)?.photo || ""} 
+                              alt={employees.find((emp) => emp.id === cert.employeeId)?.name || ""} 
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium">{cert.title}</h4>
+                          <p className="text-sm text-gray-600">{employees.find((emp) => emp.id === cert.employeeId)?.name || ""}</p>
+                        </div>
+                        <div className="mr-4 text-right">
+                          <Badge variant="outline" className="bg-industrial-blue/10 text-industrial-blue">
+                            {cert.type}
+                          </Badge>
+                        </div>
+                        <div>
+                          <Badge variant={cert.status === "valid" ? "outline" : cert.status === "expired" ? "destructive" : "secondary"}>
+                            {cert.status === "valid" ? "Válido" : cert.status === "expired" ? "Expirado" : "Expirando"}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center p-8">
+                    <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium">Nenhum certificado encontrado</h3>
+                    <p className="text-gray-500 mt-2">Tente ajustar os filtros ou adicionar novos certificados.</p>
+                  </div>
+                )}
+              </Card>
+            </TabsContent>
+          </Tabs>
         </main>
       </div>
     </div>

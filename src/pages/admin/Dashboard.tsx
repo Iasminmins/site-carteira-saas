@@ -12,7 +12,7 @@ import { CertificateCard } from "@/components/CertificateCard";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { certificates } = useCertificates();
+  const { certificates, employees } = useCertificates();
   const navigate = useNavigate();
   
   // Count certificates by status
@@ -41,14 +41,18 @@ const Dashboard = () => {
     count
   }));
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       
-      <div className="flex-1 flex flex-col overflow-hidden lg:pl-64">
-        <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header toggleSidebar={toggleSidebar} />
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 max-w-7xl mx-auto w-full">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
@@ -57,7 +61,7 @@ const Dashboard = () => {
             
             <Button 
               onClick={() => navigate('/admin/certificates/new')}
-              className="bg-industrial-blue hover:bg-industrial-blue/90 btn-hover"
+              className="bg-industrial-blue hover:bg-industrial-blue/90"
             >
               <Plus size={18} className="mr-2" />
               Novo Certificado
@@ -174,7 +178,9 @@ const Dashboard = () => {
                   key={cert.id} 
                   {...cert} 
                   showEmployee={true}
-                  onClick={() => navigate(`/admin/certificates/${cert.id}`)}
+                  employeeName={employees.find(emp => emp.id === cert.employeeId)?.name || ""}
+                  employeePhoto={employees.find(emp => emp.id === cert.employeeId)?.photo || ""}
+                  onClick={() => window.open(`/certificate/${cert.id}`, '_blank')}
                 />
               ))}
             </div>

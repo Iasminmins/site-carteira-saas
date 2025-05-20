@@ -1,13 +1,12 @@
 
 import { useAuth } from "@/contexts/AuthContext";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
-  FileCheck, 
+  FileText, 
   Users, 
   Settings, 
-  ChevronLeft, 
-  ChevronRight
+  ChevronLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -19,6 +18,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   const { user } = useAuth();
+  const location = useLocation();
   
   if (!user || user.role !== "admin") return null;
 
@@ -31,7 +31,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
     {
       title: "Certificados",
       path: "/admin/certificates",
-      icon: <FileCheck size={20} />
+      icon: <FileText size={20} />
     },
     {
       title: "Colaboradores",

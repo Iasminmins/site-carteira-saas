@@ -11,6 +11,8 @@ import { CertificateProvider } from "@/contexts/CertificateContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import CertificatesManagement from "./pages/admin/CertificatesManagement";
+import EmployeesManagement from "./pages/admin/EmployeesManagement";
+import Settings from "./pages/admin/Settings";
 import NewCertificate from "./pages/admin/NewCertificate";
 import EmployeeCertificates from "./pages/employee/EmployeeCertificates";
 import PublicCertificate from "./pages/PublicCertificate";
@@ -79,6 +81,22 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <NewCertificate />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/employees" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <EmployeesManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/settings" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Settings />
                 </ProtectedRoute>
               } 
             />
