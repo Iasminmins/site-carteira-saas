@@ -53,8 +53,8 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         onClick={toggleSidebar}
       />
       <aside 
-        className={`fixed top-0 left-0 z-30 h-screen transition-all duration-300 ease-in-out flex flex-col overflow-y-auto bg-industrial-blue text-white
-                    lg:w-16 lg:hover:w-64 ${isOpen ? 'w-64 translate-x-0' : 'w-16 -translate-x-0 lg:translate-x-0'}`}
+        className={`fixed top-0 left-0 z-30 h-screen transition-all duration-300 ease-in-out flex flex-col bg-industrial-blue text-white
+                    lg:w-16 lg:hover:w-64 ${isOpen ? 'w-64 translate-x-0' : 'w-0 -translate-x-full lg:w-16 lg:translate-x-0'}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
