@@ -102,7 +102,7 @@ const EmployeesManagement = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleMenu} />
-      <div className="flex-1">
+      <div className="flex-1 relative">
         <Header toggleSidebar={toggleMenu} showMenuToggle={true} />
         <main className="p-4 md:p-6 max-w-7xl mx-auto">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">

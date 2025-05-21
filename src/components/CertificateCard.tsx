@@ -45,8 +45,23 @@ export function CertificateCard({
   const { label, color } = getStatusConfig(status);
   
   return (
-    <Card className="card-hover cursor-pointer" onClick={onClick}>
-      <CardHeader className="pb-2">
+    <Card 
+      className="card-hover cursor-pointer relative" 
+      onClick={onClick}
+      style={{ 
+        width: '10.6cm',
+        height: '6.6cm',
+        margin: '0 auto',
+        padding: '0.5cm', // Garantindo margens internas de 0.5cm
+        boxSizing: 'border-box'
+      }}
+    >
+      <div className="absolute top-0 left-0 w-full bg-industrial-blue text-white py-2 px-4 flex items-center">
+        <div className="h-5 w-5 rounded-full bg-industrial-yellow mr-2"></div>
+        <span className="text-sm font-bold">CARTEIRINHA PROFISSIONAL</span>
+      </div>
+      
+      <CardHeader className="pb-2 pt-8">
         <div className="flex justify-between items-start">
           <Badge variant="outline" className="bg-industrial-blue/10 text-industrial-blue">
             {type}
@@ -55,8 +70,9 @@ export function CertificateCard({
             {label}
           </Badge>
         </div>
-        <CardTitle className="text-base mt-2">{title}</CardTitle>
+        <CardTitle className="text-base mt-2 line-clamp-2">{title}</CardTitle>
       </CardHeader>
+      
       <CardContent className="pb-2">
         {showEmployee && (
           <div className="flex items-center mb-3">
@@ -77,6 +93,7 @@ export function CertificateCard({
           </div>
         </div>
       </CardContent>
+      
       <CardFooter>
         <div className="flex-1 flex justify-center items-center py-2">
           {qrCode && <img src={qrCode} alt="QR Code" className="h-20 w-20" />}

@@ -68,4 +68,37 @@
   .glassmorphism {
     @apply bg-white/60 backdrop-blur-md border border-white/10 shadow-lg;
   }
+
+  /* Estilos para a carteirinha no formato CNH */
+  .cnh-card {
+    width: 10.6cm;
+    height: 6.6cm;
+    padding: 0.5cm;
+    margin: 0 auto;
+    box-sizing: border-box;
+    position: relative;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-family: 'Open Sans', Arial, sans-serif;
+  }
+  
+  /* Correção para o menu lateral fixo */
+  .sidebar-fixed {
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    top: 0;
+    left: 0;
+    z-index: 40;
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  @media (min-width: 1024px) {
+    .main-content {
+      margin-left: 16rem;
+    }
+  }
 }

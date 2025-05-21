@@ -53,6 +53,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
       />
       <aside 
         className={`${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} fixed top-0 left-0 z-30 h-screen bg-industrial-blue text-white transition-transform duration-300 ease-in-out w-64 flex flex-col overflow-y-auto`}
+        style={{ position: 'fixed', height: '100vh' }}
       >
         <div className="flex items-center justify-between p-4 border-b border-white/10 sticky top-0 bg-industrial-blue">
           <div className="flex items-center">
