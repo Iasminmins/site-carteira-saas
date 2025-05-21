@@ -10,7 +10,7 @@ import {
   Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -19,6 +19,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   const { user } = useAuth();
+  const [isHovered, setIsHovered] = useState(false);
   
   if (!user || user.role !== "admin") return null;
 
@@ -52,14 +53,17 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         onClick={toggleSidebar}
       />
       <aside 
-        className={`${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} fixed top-0 left-0 z-30 w-64 h-screen bg-industrial-blue text-white transition-transform duration-300 ease-in-out flex flex-col overflow-y-auto`}
+        className={`fixed top-0 left-0 z-30 h-screen transition-all duration-300 ease-in-out flex flex-col overflow-y-auto bg-industrial-blue text-white
+                    lg:w-16 lg:hover:w-64 ${isOpen ? 'w-64 translate-x-0' : 'w-16 -translate-x-0 lg:translate-x-0'}`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center">
+          <div className="flex items-center overflow-hidden">
+            <div className="h-8 w-8 min-w-[2rem] rounded-full bg-white flex items-center justify-center">
               <div className="h-5 w-5 rounded-full bg-industrial-yellow"></div>
             </div>
-            <h2 className="ml-2 font-poppins font-semibold">Carteira Digital</h2>
+            <h2 className="ml-2 font-poppins font-semibold whitespace-nowrap overflow-hidden">Carteira Digital</h2>
           </div>
           <Button 
             variant="ghost" 
@@ -85,8 +89,8 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
                     }`
                   }
                 >
-                  <span className="mr-3">{item.icon}</span>
-                  <span>{item.title}</span>
+                  <span className="min-w-[20px] mr-3">{item.icon}</span>
+                  <span className="whitespace-nowrap overflow-hidden transition-opacity duration-300 ease-in-out">{item.title}</span>
                 </NavLink>
               </li>
             ))}
@@ -95,8 +99,8 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         
         <div className="p-4 mt-auto border-t border-white/10">
           <div className="bg-white/10 rounded-lg p-3 text-sm">
-            <p className="font-medium">Carteira Digital</p>
-            <p className="text-xs opacity-70">v1.0.0</p>
+            <p className="font-medium whitespace-nowrap overflow-hidden">Carteira Digital</p>
+            <p className="text-xs opacity-70 whitespace-nowrap overflow-hidden">v1.0.0</p>
           </div>
         </div>
       </aside>
