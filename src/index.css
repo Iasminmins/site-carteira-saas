@@ -81,10 +81,16 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     font-family: 'Open Sans', Arial, sans-serif;
   }
+
+  /* Grid background for login */
+  .bg-grid-white {
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  }
   
   /* Correção para o menu lateral fixo */
   .sidebar-fixed {
-    position: fixed;
+    position: fixed !important;
     height: 100vh;
     overflow-y: auto;
     top: 0;

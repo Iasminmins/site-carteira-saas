@@ -6,7 +6,8 @@ import {
   FileText, 
   Users, 
   Settings, 
-  ChevronLeft
+  ChevronLeft,
+  Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -18,7 +19,6 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   const { user } = useAuth();
-  const location = useLocation();
   
   if (!user || user.role !== "admin") return null;
 
@@ -52,10 +52,9 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         onClick={toggleSidebar}
       />
       <aside 
-        className={`${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} fixed top-0 left-0 z-30 h-screen bg-industrial-blue text-white transition-transform duration-300 ease-in-out w-64 flex flex-col overflow-y-auto`}
-        style={{ position: 'fixed', height: '100vh' }}
+        className={`${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} fixed top-0 left-0 z-30 w-64 h-screen bg-industrial-blue text-white transition-transform duration-300 ease-in-out flex flex-col overflow-y-auto`}
       >
-        <div className="flex items-center justify-between p-4 border-b border-white/10 sticky top-0 bg-industrial-blue">
+        <div className="flex items-center justify-between p-4 border-b border-white/10">
           <div className="flex items-center">
             <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center">
               <div className="h-5 w-5 rounded-full bg-industrial-yellow"></div>
@@ -94,7 +93,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
           </ul>
         </nav>
         
-        <div className="p-4 mt-auto sticky bottom-0 bg-industrial-blue">
+        <div className="p-4 mt-auto border-t border-white/10">
           <div className="bg-white/10 rounded-lg p-3 text-sm">
             <p className="font-medium">Carteira Digital</p>
             <p className="text-xs opacity-70">v1.0.0</p>

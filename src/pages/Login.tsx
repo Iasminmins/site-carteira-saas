@@ -58,24 +58,31 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-industrial-blue to-blue-900 p-4">
+      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[length:20px_20px]" />
+      <div className="w-full max-w-md relative z-10">
+        <div className="flex justify-center mb-8">
+          <div className="h-16 w-16 rounded-full bg-white flex items-center justify-center shadow-lg">
+            <div className="h-10 w-10 rounded-full bg-industrial-yellow"></div>
+          </div>
+        </div>
+        
         <Tabs defaultValue="tenant" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="tenant">
+          <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/10 backdrop-blur-sm">
+            <TabsTrigger value="tenant" className="text-white data-[state=active]:bg-white data-[state=active]:text-industrial-blue">
               <Building2 className="mr-2 h-4 w-4" />
               Empresa
             </TabsTrigger>
-            <TabsTrigger value="platform">
+            <TabsTrigger value="platform" className="text-white data-[state=active]:bg-white data-[state=active]:text-industrial-blue">
               <UserCircle2 className="mr-2 h-4 w-4" />
               Plataforma
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="tenant">
-            <Card>
+            <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl font-bold">Carteira Digital</CardTitle>
+                <CardTitle className="text-2xl font-bold text-industrial-blue">Carteira Digital</CardTitle>
                 <CardDescription>
                   Faça login em sua conta de empresa para acessar os certificados
                 </CardDescription>
@@ -161,7 +168,7 @@ export default function Login() {
                   <CardFooter>
                     <Button
                       type="submit"
-                      className="w-full"
+                      className="w-full bg-industrial-blue hover:bg-industrial-blue/80"
                       disabled={isLoading}
                     >
                       {isLoading ? "Entrando..." : "Entrar"}
@@ -173,9 +180,9 @@ export default function Login() {
           </TabsContent>
           
           <TabsContent value="platform">
-            <Card>
+            <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl font-bold">Plataforma SaaS</CardTitle>
+                <CardTitle className="text-2xl font-bold text-industrial-blue">Plataforma SaaS</CardTitle>
                 <CardDescription>
                   Acesso administrativo à plataforma multi-tenant
                 </CardDescription>
@@ -246,7 +253,7 @@ export default function Login() {
           </TabsContent>
         </Tabs>
         
-        <p className="mt-4 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-white/80">
           Carteira Digital de Certificados - Sistema Multi-tenant
         </p>
       </div>
