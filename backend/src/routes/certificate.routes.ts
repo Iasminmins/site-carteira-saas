@@ -1,0 +1,19 @@
+
+import express from 'express';
+import {
+  getAllCertificates,
+  getCertificateById,
+  createCertificate,
+  updateCertificate,
+  deleteCertificate,
+} from '../controllers/certificate.controller';
+
+const router = express.Router();
+
+router.get('/', getAllCertificates);
+router.get('/:id', getCertificateById);
+router.post('/', createCertificate);
+router.put('/:id', updateCertificate);
+router.delete('/:id', deleteCertificate);
+
+export default router;

@@ -77,10 +77,10 @@
     @apply bg-white/60 backdrop-blur-md border border-white/10 shadow-lg;
   }
 
-  /* Scrollbar styling for better visibility */
+  /* Improved scrollbar styling for better visibility */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
   
   ::-webkit-scrollbar-track {
@@ -88,11 +88,23 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full;
+    @apply bg-gray-400 rounded-full hover:bg-gray-500 transition-colors;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
+    @apply bg-gray-500;
+  }
+
+  /* Main content area scrolling */
+  .main-content {
+    @apply overflow-y-auto overflow-x-hidden;
+    height: calc(100vh - 4rem); /* Adjust based on header height */
+  }
+
+  /* Explicit scroll styling for all pages */
+  .page-container {
+    @apply flex-1 overflow-y-auto overflow-x-hidden;
+    height: calc(100vh - 4rem); /* Subtract header height */
   }
 
   /* Estilos para a carteirinha no formato CNH */
@@ -117,9 +129,15 @@
   /* Estilo para melhorar a visibilidade das setas no sidebar */
   [data-sidebar="rail"]::after {
     @apply bg-industrial-yellow;
+    opacity: 1;
   }
   
   [data-sidebar="rail"]:hover::after {
     @apply bg-industrial-yellow opacity-100;
+  }
+  
+  /* Ensure content does not get cut off at the bottom */
+  .content-wrapper {
+    @apply pb-16;
   }
 }

@@ -21,7 +21,17 @@ import NotFound from "./pages/NotFound";
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
 import CompanyManagement from "./pages/superadmin/CompanyManagement";
 
-const queryClient = new QueryClient();
+// Add API service for MongoDB integration
+import ApiProvider from "./services/ApiProvider";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 // Protected route component
 const ProtectedRoute = ({ 
@@ -56,101 +66,103 @@ const ProtectedRoute = ({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <CertificateProvider>
-          <Toaster />
-          <Sonner />
-          <Routes>
-            <Route path="/" element={<Login />} />
-            
-            {/* SuperAdmin Routes */}
-            <Route 
-              path="/superadmin/dashboard" 
-              element={
-                <ProtectedRoute requiredRole="superadmin">
-                  <SuperAdminDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/superadmin/companies" 
-              element={
-                <ProtectedRoute requiredRole="superadmin">
-                  <CompanyManagement />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Admin Routes */}
-            <Route 
-              path="/admin/dashboard" 
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/certificates" 
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <CertificatesManagement />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/certificates/new" 
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <NewCertificate />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/employees" 
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <EmployeesManagement />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/employees/:id" 
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <EmployeeDetails />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/settings" 
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <Settings />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Employee Routes */}
-            <Route 
-              path="/employee/certificates" 
-              element={
-                <ProtectedRoute requiredRole="employee">
-                  <EmployeeCertificates />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Public Certificate View */}
-            <Route path="/certificate/:id" element={<PublicCertificate />} />
-            
-            {/* Not Found */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </CertificateProvider>
-      </AuthProvider>
-    </TooltipProvider>
+    <ApiProvider>
+      <TooltipProvider>
+        <AuthProvider>
+          <CertificateProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route path="/" element={<Login />} />
+              
+              {/* SuperAdmin Routes */}
+              <Route 
+                path="/superadmin/dashboard" 
+                element={
+                  <ProtectedRoute requiredRole="superadmin">
+                    <SuperAdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/superadmin/companies" 
+                element={
+                  <ProtectedRoute requiredRole="superadmin">
+                    <CompanyManagement />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Admin Routes */}
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/certificates" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <CertificatesManagement />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/certificates/new" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <NewCertificate />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/employees" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <EmployeesManagement />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/employees/:id" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <EmployeeDetails />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/settings" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <Settings />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Employee Routes */}
+              <Route 
+                path="/employee/certificates" 
+                element={
+                  <ProtectedRoute requiredRole="employee">
+                    <EmployeeCertificates />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Public Certificate View */}
+              <Route path="/certificate/:id" element={<PublicCertificate />} />
+              
+              {/* Not Found */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </CertificateProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </ApiProvider>
   </QueryClientProvider>
 );
 
