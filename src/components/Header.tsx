@@ -26,7 +26,7 @@ export function Header({ toggleSidebar, showMenuToggle = true }: HeaderProps) {
             variant="ghost" 
             size="icon" 
             onClick={toggleSidebar}
-            className="mr-2 sm:hidden"
+            className="mr-2 sm:hidden text-industrial-blue"
           >
             <Menu className="h-5 w-5" />
           </Button>

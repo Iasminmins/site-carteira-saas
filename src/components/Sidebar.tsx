@@ -67,7 +67,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
           </div>
           <Button 
             variant="ghost" 
-            className="lg:hidden text-white hover:bg-white/10" 
+            className="lg:hidden text-industrial-yellow hover:bg-white/10" 
             size="icon"
             onClick={toggleSidebar}
           >

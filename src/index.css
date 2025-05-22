@@ -91,4 +91,13 @@
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
                       linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
   }
+  
+  /* Estilo para melhorar a visibilidade das setas no sidebar */
+  [data-sidebar="rail"]::after {
+    @apply bg-industrial-yellow;
+  }
+  
+  [data-sidebar="rail"]:hover::after {
+    @apply bg-industrial-yellow opacity-100;
+  }
 }
