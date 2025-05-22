@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Printer, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const PublicCertificate = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,103 +49,108 @@ const PublicCertificate = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-md mx-auto mt-8">
-        <div className="flex justify-between items-center mb-4">
-          <Button 
-            variant="ghost" 
-            onClick={() => window.history.back()}
-          >
-            <ArrowLeft size={18} className="mr-2" />
-            Voltar
-          </Button>
-          
-          <Button
-            variant="outline"
-            onClick={handlePrint}
-          >
-            <Printer size={18} className="mr-2" />
-            Imprimir
-          </Button>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden border animate-fade-in print:shadow-none print:border">
-          <div className="bg-industrial-blue text-white p-4">
-            <div className="flex items-center">
-              <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center">
-                <div className="h-6 w-6 rounded-full bg-industrial-yellow"></div>
+    <div className="h-screen flex flex-col bg-gray-50">
+      <ScrollArea className="flex-1">
+        <div className="p-4">
+          <div className="max-w-md mx-auto mt-8">
+            <div className="flex justify-between items-center mb-4">
+              <Button 
+                variant="ghost" 
+                onClick={() => window.history.back()}
+              >
+                <ArrowLeft size={18} className="mr-2" />
+                Voltar
+              </Button>
+              
+              <Button
+                variant="outline"
+                onClick={handlePrint}
+              >
+                <Printer size={18} className="mr-2" />
+                Imprimir
+              </Button>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden border animate-fade-in print:shadow-none print:border">
+              <div className="bg-industrial-blue text-white p-4">
+                <div className="flex items-center">
+                  <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center">
+                    <div className="h-6 w-6 rounded-full bg-industrial-yellow"></div>
+                  </div>
+                  <div className="ml-3">
+                    <h1 className="text-xl font-bold">Carteira Digital</h1>
+                    <p className="text-sm opacity-80">Verificação de Certificado</p>
+                  </div>
+                </div>
               </div>
-              <div className="ml-3">
-                <h1 className="text-xl font-bold">Carteira Digital</h1>
-                <p className="text-sm opacity-80">Verificação de Certificado</p>
+              
+              <div className="p-5">
+                <div className="flex justify-between items-center mb-6">
+                  <Badge className={className}>
+                    {label}
+                  </Badge>
+                  <Badge variant="outline" className="bg-industrial-blue/10 text-industrial-blue">
+                    {certificate.type}
+                  </Badge>
+                </div>
+                
+                <div className="flex mb-6">
+                  <div className="h-20 w-20 rounded overflow-hidden bg-gray-200 flex-shrink-0">
+                    {certificate.employeePhoto && (
+                      <img 
+                        src={certificate.employeePhoto} 
+                        alt={certificate.employeeName} 
+                        className="h-full w-full object-cover"
+                      />
+                    )}
+                  </div>
+                  <div className="ml-4">
+                    <h2 className="font-semibold text-lg">{certificate.employeeName}</h2>
+                    <p className="text-sm text-gray-600">ID: {certificate.employeeId}</p>
+                  </div>
+                </div>
+                
+                <div className="border-t border-b py-4 mb-4">
+                  <h3 className="font-medium mb-1">Certificado:</h3>
+                  <p>{certificate.title}</p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <p className="text-sm text-gray-600">Data de Emissão:</p>
+                    <p className="font-medium">{format(new Date(certificate.issuedDate), 'dd/MM/yyyy')}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Data de Validade:</p>
+                    <p className={`font-medium ${
+                      certificate.status === "valid" 
+                        ? "text-green-600" 
+                        : certificate.status === "expired"
+                          ? "text-red-600"
+                          : "text-amber-600"
+                    }`}>
+                      {format(new Date(certificate.expiryDate), 'dd/MM/yyyy')}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex justify-center mb-4">
+                  <div className="relative">
+                    <img src={certificate.qrCode} alt="QR Code" className="h-32 w-32" />
+                    <QrCode size={18} className="absolute bottom-2 right-2 text-industrial-blue" />
+                  </div>
+                </div>
+                
+                <div className="text-center text-xs text-gray-500">
+                  <p>Este certificado pode ser verificado através do QR Code.</p>
+                  <p className="mt-1">ID: {certificate.id}</p>
+                </div>
               </div>
             </div>
           </div>
-          
-          <div className="p-5">
-            <div className="flex justify-between items-center mb-6">
-              <Badge className={className}>
-                {label}
-              </Badge>
-              <Badge variant="outline" className="bg-industrial-blue/10 text-industrial-blue">
-                {certificate.type}
-              </Badge>
-            </div>
-            
-            <div className="flex mb-6">
-              <div className="h-20 w-20 rounded overflow-hidden bg-gray-200 flex-shrink-0">
-                {certificate.employeePhoto && (
-                  <img 
-                    src={certificate.employeePhoto} 
-                    alt={certificate.employeeName} 
-                    className="h-full w-full object-cover"
-                  />
-                )}
-              </div>
-              <div className="ml-4">
-                <h2 className="font-semibold text-lg">{certificate.employeeName}</h2>
-                <p className="text-sm text-gray-600">ID: {certificate.employeeId}</p>
-              </div>
-            </div>
-            
-            <div className="border-t border-b py-4 mb-4">
-              <h3 className="font-medium mb-1">Certificado:</h3>
-              <p>{certificate.title}</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <p className="text-sm text-gray-600">Data de Emissão:</p>
-                <p className="font-medium">{format(new Date(certificate.issuedDate), 'dd/MM/yyyy')}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Data de Validade:</p>
-                <p className={`font-medium ${
-                  certificate.status === "valid" 
-                    ? "text-green-600" 
-                    : certificate.status === "expired"
-                      ? "text-red-600"
-                      : "text-amber-600"
-                }`}>
-                  {format(new Date(certificate.expiryDate), 'dd/MM/yyyy')}
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex justify-center mb-4">
-              <div className="relative">
-                <img src={certificate.qrCode} alt="QR Code" className="h-32 w-32" />
-                <QrCode size={18} className="absolute bottom-2 right-2 text-industrial-blue" />
-              </div>
-            </div>
-            
-            <div className="text-center text-xs text-gray-500">
-              <p>Este certificado pode ser verificado através do QR Code.</p>
-              <p className="mt-1">ID: {certificate.id}</p>
-            </div>
-          </div>
+          <div className="h-16"></div> {/* Extra space at the bottom for better scrolling */}
         </div>
-      </div>
+      </ScrollArea>
     </div>
   );
 };

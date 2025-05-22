@@ -53,12 +53,12 @@
     @apply border-border;
   }
 
-  html, body {
+  html {
     @apply overflow-hidden h-screen;
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans overflow-hidden h-screen;
   }
   
   #root {
@@ -79,8 +79,8 @@
 
   /* Improved scrollbar styling for better visibility */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
   }
   
   ::-webkit-scrollbar-track {
@@ -107,16 +107,38 @@
     height: calc(100vh - 4rem); /* Subtract header height */
   }
 
-  /* Estilos para a carteirinha no formato CNH */
-  .cnh-card {
+  /* Ensuring app content is scrollable */
+  .content-wrapper {
+    @apply flex-1 overflow-y-auto overflow-x-hidden pb-16;
+  }
+  
+  /* Make dialog content scrollable */
+  .DialogContent {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  /* Ensure layout components can scroll */
+  .scroll-container {
+    @apply overflow-y-auto overflow-x-hidden h-full;
+  }
+
+  /* Specific fix for mobile dialogs */
+  @media (max-width: 640px) {
+    [data-radix-popper-content-wrapper] {
+      max-height: 90vh !important;
+      overflow-y: auto !important;
+    }
+  }
+
+  /* Estilos para a carteirinha no formato CBSI */
+  .cbsi-card {
     width: 10.6cm;
-    height: 6.6cm;
-    padding: 0.5cm;
+    height: 15cm;
     margin: 0 auto;
-    box-sizing: border-box;
+    border: 1px dashed #000;
     position: relative;
     background: #fff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     font-family: 'Open Sans', Arial, sans-serif;
   }
 
@@ -134,10 +156,5 @@
   
   [data-sidebar="rail"]:hover::after {
     @apply bg-industrial-yellow opacity-100;
-  }
-  
-  /* Ensure content does not get cut off at the bottom */
-  .content-wrapper {
-    @apply pb-16;
   }
 }

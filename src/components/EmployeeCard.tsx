@@ -16,9 +16,10 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { FileText, Award, Badge as CertificateBadge, IdCard, QrCode } from "lucide-react";
+import { FileText, Award, Badge as CertificateBadge, IdCard, QrCode, Check } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface EmployeeCardProps {
   name: string;
@@ -62,7 +63,7 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
       printWindow.document.write(`
         <html>
           <head>
-            <title>Carteirinha Profissional - ${name}</title>
+            <title>Carteira de Autorização - ${name}</title>
             <style>
               @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&display=swap');
               body { 
@@ -73,145 +74,136 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
               }
               .card-container {
                 width: 10.6cm; 
-                height: 6.6cm;
+                height: 15cm;
                 margin: 20px auto;
                 background: #fff;
-                border-radius: 8px;
-                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+                border: 1px dashed #000;
                 overflow: hidden;
                 position: relative;
-                color: #333;
+                color: #000;
                 padding: 0;
                 box-sizing: border-box;
               }
               .card-header {
-                background: linear-gradient(90deg, #0A2463 0%, #3E92CC 100%);
-                padding: 8px 12px;
                 display: flex;
-                align-items: center;
-                color: white;
-                width: 100%;
-                box-sizing: border-box;
+                padding: 10px;
+                border-bottom: 1px dashed #000;
               }
               .company-logo {
-                width: 24px;
-                height: 24px;
-                background: #ffcc00;
-                border-radius: 50%;
-                margin-right: 10px;
+                width: 70px;
+                height: 70px;
+                border: 1px dashed #000;
+                margin-right: 15px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                font-weight: bold;
+              }
+              .header-title {
+                flex: 1;
               }
               .card-title {
                 margin: 0;
-                font-size: 14px;
-                font-weight: 700;
-              }
-              .card-body {
-                padding: 12px;
-                display: flex;
-                flex-direction: row;
-                box-sizing: border-box;
-              }
-              .personal-info {
-                width: 40%;
-                padding-right: 10px;
-              }
-              .certificates-info {
-                width: 60%;
-                border-left: 1px solid #ddd;
-                padding-left: 10px;
-              }
-              .photo {
-                width: 70px;
-                height: 90px;
-                background-color: #e0e0e0;
-                border: 1px solid #ccc;
-                margin-bottom: 8px;
-                object-fit: cover;
-                display: block;
-              }
-              .name {
-                font-size: 14pt;
-                font-weight: 700;
-                margin: 0 0 5px 0;
-                line-height: 1.2;
-              }
-              .id-number {
-                font-size: 11px;
-                color: #555;
-                margin: 0 0 8px 0;
-              }
-              .certificate-title {
-                font-size: 11px;
+                font-size: 16px;
                 font-weight: 700;
                 text-transform: uppercase;
-                margin: 0 0 5px 0;
-                color: #555;
-                border-bottom: 1px solid #ddd;
-                padding-bottom: 3px;
               }
-              .certificate-list {
-                font-size: 10pt;
-              }
-              .certificate-item {
+              .photo-placeholder {
+                width: 120px;
+                height: 150px;
+                border: 1px dashed #000;
                 display: flex;
-                justify-content: space-between;
-                margin-bottom: 6px;
-                padding-bottom: 4px;
-                border-bottom: 1px dotted #ccc;
+                align-items: center;
+                justify-content: center;
+                margin: 10px;
               }
-              .certificate-name {
-                font-weight: 500;
-                width: 60%;
-                line-height: 1.2;
-                word-wrap: break-word;
+              .employee-info {
+                padding: 10px;
+                border-bottom: 1px dashed #000;
               }
-              .certificate-validity {
-                width: 40%;
+              .info-row {
+                margin-bottom: 5px;
+              }
+              .info-label {
+                font-weight: 700;
+                display: inline;
+              }
+              .authorizations {
+                display: flex;
+                padding: 0;
+              }
+              .auth-column {
+                flex: 1;
+                border-right: 1px dashed #000;
+                padding: 10px;
+              }
+              .auth-column:last-child {
+                border-right: none;
+              }
+              .auth-header {
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 10px;
+                font-size: 12px;
+                text-transform: uppercase;
+              }
+              .auth-item {
+                display: flex;
+                margin-bottom: 5px;
+                font-size: 11px;
+              }
+              .auth-checkbox {
+                width: 14px;
+                height: 14px;
+                border: 1px solid #000;
+                margin-right: 5px;
+                font-size: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              .checked {
+                background-color: #ccc;
+              }
+              .auth-name {
+                flex: 1;
+              }
+              .auth-date {
+                width: 80px;
                 text-align: right;
+              }
+              .signatures {
+                display: flex;
+                padding: 10px;
+                border-top: 1px dashed #000;
+              }
+              .signature-box {
+                flex: 1;
+                text-align: center;
+                padding: 5px;
                 font-size: 10px;
               }
-              .certificate-valid { color: #2e7d32; }
-              .certificate-expiring { color: #ed6c02; }
-              .certificate-expired { color: #d32f2f; }
-              .card-footer {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0 12px 12px;
-                font-size: 9px;
-                color: #777;
+              .signature-line {
+                height: 40px;
+                border-bottom: 1px solid #000;
+                margin-bottom: 5px;
               }
-              .qrcode {
-                width: 60px;
-                height: 60px;
-              }
-              .watermark {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                font-size: 80px;
-                opacity: 0.03;
-                font-weight: 700;
-                pointer-events: none;
-                color: #000;
-                z-index: 0;
-                white-space: nowrap;
+              .emergency-contacts {
+                padding: 10px;
+                font-size: 10px;
+                text-align: center;
+                border-top: 1px dashed #000;
               }
               @media print {
                 body { background: none; }
                 .card-container { 
                   box-shadow: none;
-                  border: 1px solid #ddd;
+                  border: 1px dashed #000;
                   page-break-inside: avoid;
                   margin: 0;
                 }
                 @page {
-                  size: 11cm 7cm;
+                  size: 11cm 15.5cm;
                   margin: 0;
                 }
               }
@@ -219,53 +211,84 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
           </head>
           <body onload="setTimeout(function() { window.print(); }, 500)">
             <div class="card-container">
-              <div class="watermark">CERTIFICADO</div>
               <div class="card-header">
-                <div class="company-logo">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A2463" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                    <path d="M2 17l10 5 10-5"></path>
-                    <path d="M2 12l10 5 10-5"></path>
-                  </svg>
-                </div>
-                <div>
-                  <h1 class="card-title">CARTEIRINHA PROFISSIONAL</h1>
-                </div>
-              </div>
-              
-              <div class="card-body">
-                <div class="personal-info">
-                  <img src="${photo || 'https://via.placeholder.com/70x90?text=Foto'}" alt="${name}" class="photo">
-                  <h2 class="name">${name}</h2>
-                  <p class="id-number">ID: ${id}</p>
-                </div>
-                
-                <div class="certificates-info">
-                  <h3 class="certificate-title">Treinamentos Realizados</h3>
-                  <div class="certificate-list">
-                    ${certificates.slice(0, 6).map(cert => `
-                      <div class="certificate-item">
-                        <span class="certificate-name">${cert.type}</span>
-                        <span class="certificate-validity ${
-                          cert.status === 'valid' ? 'certificate-valid' : 
-                          cert.status === 'expired' ? 'certificate-expired' : 
-                          'certificate-expiring'
-                        }">
-                          ${formatDate(cert.expiryDate)}
-                        </span>
-                      </div>
-                    `).join('')}
-                    ${certificates.length > 6 ? `<div class="certificate-item">...(${certificates.length - 6} mais)</div>` : ''}
+                <div class="company-logo">CBSI</div>
+                <div class="header-title">
+                  <h1 class="card-title">Carteira de Autorização</h1>
+                  <div class="photo-placeholder">
+                    Portar documento com foto
                   </div>
                 </div>
               </div>
               
-              <div class="card-footer">
-                <img src="${`https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=${window.location.origin}/certificate/${id}`}" alt="QR Code" class="qrcode">
-                <div>
-                  <p>Carteirinha emitida em: ${new Date().toLocaleDateString('pt-BR')}</p>
-                  <p>Verifique a autenticidade pelo QR Code</p>
+              <div class="employee-info">
+                <div class="info-row">
+                  <span class="info-label">Nome:</span> ${name}
                 </div>
+                <div class="info-row">
+                  <span class="info-label">Matrícula:</span> ${id}
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Função:</span> ${certificates[0]?.type || 'N/A'}
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Contrato:</span> TÉCNICO MANUTENÇÃO
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Integração:</span> ${formatDate(new Date())} 
+                  <span style="margin-left: 20px" class="info-label">ASO:</span> ${formatDate(new Date(Date.now() + 30*24*60*60*1000))}
+                </div>
+              </div>
+              
+              <div class="authorizations">
+                <div class="auth-column">
+                  <div class="auth-header">Trabalhador Autorizado / Validade</div>
+                  ${certificates.slice(0, 7).map(cert => `
+                    <div class="auth-item">
+                      <div class="auth-checkbox ${cert.status === 'valid' ? 'checked' : ''}">
+                        ${cert.status === 'valid' ? '✓' : ''}
+                      </div>
+                      <div class="auth-name">${cert.type}</div>
+                      <div class="auth-date">${formatDate(cert.expiryDate)}</div>
+                    </div>
+                  `).join('')}
+                </div>
+                <div class="auth-column">
+                  <div class="auth-header">Operação/Execução</div>
+                  <div class="auth-item">
+                    <div class="auth-checkbox"></div>
+                    <div class="auth-name">DIREÇÃO DEFENSIVA</div>
+                    <div class="auth-date">__/__/__</div>
+                  </div>
+                  <div class="auth-item">
+                    <div class="auth-checkbox"></div>
+                    <div class="auth-name">VEÍCULO DE GRANDE PORTE</div>
+                    <div class="auth-date">__/__/__</div>
+                  </div>
+                  <div class="auth-item">
+                    <div class="auth-checkbox"></div>
+                    <div class="auth-name">TRABALHO A QUENTE</div>
+                    <div class="auth-date">__/__/__</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="signatures">
+                <div class="signature-box">
+                  <div class="signature-line"></div>
+                  <div>SESMT CBSI<br/>ELABORADO POR:</div>
+                </div>
+                <div class="signature-box">
+                  <div class="signature-line"></div>
+                  <div>SESMT CBSI<br/>APROVADO POR:</div>
+                </div>
+              </div>
+              
+              <div class="emergency-contacts">
+                <strong>RAMAIS DE EMERGÊNCIA</strong><br/>
+                SESMT CBSI: 33443866 / Posto médico CBSI: 3344307<br/>
+                Bombeiro CSN: 33444000-5555 / Ambulância CSN: 33444455<br/>
+                Guarda Patrimonial CSN: 33444888-4673
               </div>
             </div>
           </body>
@@ -283,60 +306,120 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
           Gerar Carteirinha
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle>Carteirinha de Certificados</DialogTitle>
+          <DialogTitle>Carteira de Autorização</DialogTitle>
         </DialogHeader>
         
-        <div id="employee-card-print" className="mt-4">
-          <Card className="border-2" style={{ width: '10.6cm', height: '6.6cm', margin: '0 auto' }}>
-            <div className="bg-industrial-blue text-white px-3 py-2 flex items-center">
-              <div className="h-5 w-5 rounded-full bg-industrial-yellow mr-2"></div>
-              <h3 className="text-sm font-bold">CARTEIRINHA PROFISSIONAL</h3>
-            </div>
-            
-            <div className="flex p-3">
-              <div className="w-1/3">
-                <Avatar className="h-20 w-16 rounded-sm">
-                  <AvatarImage src={photo} alt={name} className="object-cover" />
-                  <AvatarFallback className="text-lg rounded-sm">
-                    {name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <h4 className="text-base font-bold mt-2 line-clamp-2">{name}</h4>
-                <p className="text-xs text-muted-foreground">ID: {id}</p>
-              </div>
-              
-              <div className="w-2/3 border-l pl-3 ml-2">
-                <h5 className="text-xs font-bold mb-1 border-b pb-1">TREINAMENTOS REALIZADOS</h5>
-                <div className="space-y-1.5 overflow-y-auto max-h-[80px]">
-                  {certificates.slice(0, 6).map((cert, idx) => (
-                    <div key={idx} className="flex justify-between border-b border-dotted border-gray-200 pb-1">
-                      <span className="text-xs font-medium line-clamp-1">{cert.type}</span>
-                      <span className={`text-xs ${
-                        cert.status === 'valid' ? 'text-green-600' : 
-                        cert.status === 'expired' ? 'text-red-600' : 
-                        'text-amber-600'
-                      }`}>
-                        {formatDate(cert.expiryDate)}
-                      </span>
-                    </div>
-                  ))}
+        <ScrollArea className="max-h-[70vh]">
+          <div id="employee-card-print" className="mt-4">
+            <Card className="border-2 border-dashed border-black" style={{ width: '10.6cm', margin: '0 auto' }}>
+              {/* Header with logo and title */}
+              <div className="flex p-3 border-b border-dashed border-black">
+                <div className="flex items-center justify-center w-16 h-16 border border-dashed border-black mr-3 font-bold">
+                  CBSI
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold uppercase">Carteira de Autorização</h3>
+                  <div className="flex items-center justify-center w-24 h-28 border border-dashed border-black mt-2 text-xs text-center">
+                    Portar documento com foto
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex justify-between items-center px-3 pb-2">
-              <div className="flex items-center">
-                <QrCode size={40} className="text-industrial-blue" />
+              
+              {/* Employee info */}
+              <div className="p-3 border-b border-dashed border-black">
+                <div className="mb-1">
+                  <span className="font-bold">Nome:</span> {name}
+                </div>
+                <div className="mb-1">
+                  <span className="font-bold">Matrícula:</span> {id}
+                </div>
+                <div className="mb-1">
+                  <span className="font-bold">Função:</span> {certificates[0]?.type || 'N/A'}
+                </div>
+                <div className="mb-1">
+                  <span className="font-bold">Contrato:</span> TÉCNICO MANUTENÇÃO
+                </div>
+                <div className="mb-1">
+                  <span className="font-bold">Integração:</span> {formatDate(new Date())}
+                  <span className="ml-4 font-bold">ASO:</span> {formatDate(new Date(Date.now() + 30*24*60*60*1000))}
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] text-muted-foreground">Emitido em: {new Date().toLocaleDateString('pt-BR')}</p>
-                <p className="text-[10px] text-muted-foreground">Verificar autenticidade: {window.location.host}</p>
+              
+              {/* Authorization columns */}
+              <div className="flex">
+                <div className="w-1/2 p-2 border-r border-dashed border-black">
+                  <div className="text-xs font-bold uppercase text-center mb-2">
+                    Trabalhador Autorizado / Validade
+                  </div>
+                  <div className="space-y-1">
+                    {certificates.slice(0, 7).map((cert, idx) => (
+                      <div key={idx} className="flex items-center text-xs">
+                        <div className={`w-4 h-4 border border-black mr-1 flex items-center justify-center ${cert.status === 'valid' ? 'bg-gray-200' : ''}`}>
+                          {cert.status === 'valid' && <Check size={10} />}
+                        </div>
+                        <div className="flex-1">{cert.type}</div>
+                        <div className="w-16 text-right">{formatDate(cert.expiryDate)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="w-1/2 p-2">
+                  <div className="text-xs font-bold uppercase text-center mb-2">
+                    Operação/Execução
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center text-xs">
+                      <div className="w-4 h-4 border border-black mr-1"></div>
+                      <div className="flex-1">DIREÇÃO DEFENSIVA</div>
+                      <div className="w-16 text-right">__/__/__</div>
+                    </div>
+                    <div className="flex items-center text-xs">
+                      <div className="w-4 h-4 border border-black mr-1"></div>
+                      <div className="flex-1">VEÍCULO DE GRANDE PORTE</div>
+                      <div className="w-16 text-right">__/__/__</div>
+                    </div>
+                    <div className="flex items-center text-xs">
+                      <div className="w-4 h-4 border border-black mr-1"></div>
+                      <div className="flex-1">TRABALHO A QUENTE</div>
+                      <div className="w-16 text-right">__/__/__</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </Card>
-        </div>
+              
+              {/* Signatures */}
+              <div className="flex p-2 border-t border-dashed border-black">
+                <div className="flex-1 text-center">
+                  <div className="h-12 border-b border-black mb-1"></div>
+                  <div className="text-xs">
+                    SESMT CBSI<br />
+                    ELABORADO POR:
+                  </div>
+                </div>
+                <div className="flex-1 text-center">
+                  <div className="h-12 border-b border-black mb-1"></div>
+                  <div className="text-xs">
+                    SESMT CBSI<br />
+                    APROVADO POR:
+                  </div>
+                </div>
+              </div>
+              
+              {/* Emergency contacts */}
+              <div className="p-2 border-t border-dashed border-black text-center">
+                <div className="text-xs font-bold">RAMAIS DE EMERGÊNCIA</div>
+                <div className="text-[10px]">
+                  SESMT CBSI: 33443866 / Posto médico CBSI: 3344307<br/>
+                  Bombeiro CSN: 33444000-5555 / Ambulância CSN: 33444455<br/>
+                  Guarda Patrimonial CSN: 33444888-4673
+                </div>
+              </div>
+            </Card>
+          </div>
+        </ScrollArea>
         
         <div className="flex justify-between mt-4">
           <DialogClose asChild>
