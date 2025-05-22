@@ -52,11 +52,11 @@ const Dashboard = () => {
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       
-      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarOpen && !isMobile ? 'lg:ml-64' : 'lg:ml-16'}`}>
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleSidebar} />
         
-        <ScrollArea className="flex-1">
-          <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6">
+          <div className="max-w-7xl mx-auto">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
@@ -190,7 +190,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </ScrollArea>
+        </div>
       </div>
     </div>
   );
