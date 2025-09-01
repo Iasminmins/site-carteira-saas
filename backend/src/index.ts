@@ -1,53 +1,105 @@
+// backend/src/index.ts
 
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import connectDB from './db';                   // Sua função de conexão com o MongoDB (Mongoose)
 import employeeRoutes from './routes/employee.routes';
 import certificateRoutes from './routes/certificate.routes';
 
-// Load environment variables
+// 1. Carrega as variáveis de ambiente (apenas uma vez)
 dotenv.config();
 
-// Create Express app
+// 2. Conecta ao MongoDB Atlas via Mongoose
+connectDB();
+
+// 3. Cria a aplicação Express
 const app = express();
 
-// Middleware
-app.use(cors());
+// 4. Middlewares globais
+
+// 4.1 Habilita CORS (caso queira configurar origens específicas, edite as opções abaixo)
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN?.split(',') || '*', // você pode colocar uma lista de domínios separados por vírgula no .env
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  })
+);
+
+// 4.2 Faz o parse do JSON no corpo das requisições
 app.use(express.json());
+
+// 4.3 Faz o parse do URL-encoded (formulários simples)
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/certificate-management';
+// 4.4 (Opcional) Middleware de logging básico (descomente se quiser ver no console cada requisição)
+// import morgan from 'morgan';
+// app.use(morgan('dev'));
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
-  });
+// 5. Rotas principais da API
 
-// Routes
+// 5.1 Rotas de Employee (funcionários)
 app.use('/api/employees', employeeRoutes);
+
+// 5.2 Rotas de Certificate (certificados)
 app.use('/api/certificates', certificateRoutes);
 
-// Health check route
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Server is running' });
+// 6. Health check (rota para monitoramento/uptime)
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+  });
 });
 
-// Start server
+// 7. Tratamento de rotas não encontradas (404)
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
+    status: 'error',
+    message: `Cannot ${req.method} ${req.originalUrl}`,
+  });
+});
+
+// 8. Middleware global de tratamento de erros
+interface ApiError extends Error {
+  statusCode?: number;
+}
+app.use(
+  (
+    err: ApiError,
+    req: Request,
+    res: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    next: NextFunction
+  ) => {
+    console.error('❌ Erro capturado no middleware global:', err);
+
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'Internal Server Error';
+
+    res.status(statusCode).json({
+      status: 'error',
+      message,
+    });
+  }
+);
+
+// 9. Inicia o servidor na porta definida em .env (ou 5000 por padrão)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Promise Rejection:', err);
-  // Close server & exit process
+// 10. Captura rejeições de Promises não tratadas e encerra o processo com falha
+process.on('unhandledRejection', (reason: any) => {
+  console.error('💥 Unhandled Rejection:', reason);
+  // Encerra o processo para evitar comportamentos estranhos
   process.exit(1);
 });
+
+// 11. Captura erros não tratados (não recomendável manter em produção, mas útil em dev)
+// process.on('uncaughtException', (err: Error) => {
+//   console.error('💥 Uncaught Exception:', err);
+//   process.exit(1);
+// });
