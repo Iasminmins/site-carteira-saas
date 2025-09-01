@@ -5,7 +5,30 @@
 [![Versão Node.js](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/mongodb-%3E%3D4.4-green.svg)](https://www.mongodb.com/)
 
-Sistema de gestão de certificados digitais de nível empresarial para conformidade industrial, especializado em normas regulamentadoras brasileiras (NRs), certificações ISO e registros de treinamentos de segurança ocupacional.
+## 💳 Carteiras Digitais para Certificados Industriais
+
+Plataforma inovadora que **digitaliza e moderniza o acesso aos certificados industriais**, substituindo as tradicionais carteirinhas físicas por **carteiras digitais inteligentes com QR Code**. 
+
+O sistema resolve a principal dor do setor industrial brasileiro: **dificuldade de acesso, validação e controle de certificados de segurança do trabalho** como NRs, ISO e CIPA.
+
+### 🎯 **Problema Resolvido**
+- ❌ **Antes**: Carteirinhas físicas perdidas, danificadas ou falsificadas
+- ❌ **Antes**: Dificuldade para validar autenticidade dos certificados  
+- ❌ **Antes**: Controle manual e descentralizado das certificações
+- ❌ **Antes**: Renovações esquecidas e multas por não conformidade
+
+### ✅ **Solução Digital**
+- ✅ **Carteiras digitais** sempre acessíveis via smartphone
+- ✅ **QR Codes únicos** para validação instantânea e offline
+- ✅ **Controle centralizado** de todas as certificações da empresa
+- ✅ **Alertas automáticos** de vencimento e renovação obrigatória
+
+### 🚀 **Principais Benefícios**
+- **📱 Acesso Imediato**: Certificados sempre na palma da mão
+- **🔒 Validação Segura**: QR Codes criptografados impossíveis de falsificar  
+- **⚡ Velocidade**: Verificação de certificados em segundos
+- **💰 Redução de Custos**: Elimina impressão e reimpressão de carteiras físicas
+- **📊 Gestão Inteligente**: Dashboard completo para acompanhamento em tempo real
 
 ## Visão Geral da Arquitetura
 
@@ -154,7 +177,7 @@ Content-Type: application/json
 }
 ```
 
-### Endpoints de Gestão de Certificados
+### Endpoints de Gestão de Certificados e Carteiras Digitais
 
 ```http
 GET    /api/v1/certificates           # Listar todos os certificados
@@ -162,7 +185,21 @@ POST   /api/v1/certificates           # Criar novo certificado
 GET    /api/v1/certificates/:id       # Obter detalhes do certificado
 PUT    /api/v1/certificates/:id       # Atualizar certificado
 DELETE /api/v1/certificates/:id       # Excluir certificado
-GET    /api/v1/certificates/validate/:hash  # Validar certificado
+
+# Endpoints específicos para carteiras digitais e QR Codes
+GET    /api/v1/certificates/:id/qrcode      # Gerar QR Code do certificado
+GET    /api/v1/certificates/:id/digital-card # Obter carteira digital
+GET    /api/v1/certificates/validate/:hash  # Validar certificado via QR Code
+POST   /api/v1/certificates/:id/share       # Compartilhar carteira digital
+```
+
+### Endpoints de Carteiras Digitais por Funcionário
+
+```http
+GET    /api/v1/employees/:id/wallet         # Carteira digital do funcionário
+GET    /api/v1/employees/:id/certificates   # Certificados do funcionário
+GET    /api/v1/employees/:id/qr-cards       # Todas as carteiras com QR Code
+POST   /api/v1/employees/:id/generate-card  # Gerar nova carteira digital
 ```
 
 ### Endpoints de Gestão de Funcionários
@@ -176,75 +213,35 @@ DELETE /api/v1/employees/:id          # Excluir funcionário
 GET    /api/v1/employees/:id/certificates # Obter certificados do funcionário
 ```
 
-## Schema do Banco de Dados
+## Funcionalidades Principais
 
-### Coleções Principais
+### 💳 Carteiras Digitais Inteligentes
+- **Geração automática** de carteirinhas digitais personalizadas
+- **QR Codes únicos e criptografados** para cada certificado
+- **Acesso offline** através de QR Code - funciona sem internet
+- **Design responsivo** otimizado para dispositivos móveis
+- **Compartilhamento seguro** via link ou QR Code
 
-#### Coleção Users
-```javascript
-{
-  _id: ObjectId,
-  email: String (único, obrigatório),
-  password: String (hasheada, obrigatório),
-  role: String (enum: ['admin', 'employee', 'superadmin']),
-  companyId: ObjectId (ref: 'Company'),
-  profile: {
-    firstName: String,
-    lastName: String,
-    cpf: String,
-    phone: String
-  },
-  createdAt: Date,
-  updatedAt: Date,
-  lastLogin: Date
-}
-```
+### 🔍 Validação por QR Code
+- **Leitura instantânea** com qualquer leitor de QR Code
+- **Verificação offline** da autenticidade do certificado
+- **Dados criptografados** no próprio QR Code
+- **Histórico de validações** para auditoria
+- **Integração** com sistemas terceiros via API
 
-#### Coleção Certificates
-```javascript
-{
-  _id: ObjectId,
-  certificateNumber: String (único, obrigatório),
-  employeeId: ObjectId (ref: 'User'),
-  companyId: ObjectId (ref: 'Company'),
-  courseType: String (obrigatório), // NR-10, NR-35, ISO-9001, etc.
-  courseName: String (obrigatório),
-  issueDate: Date (obrigatório),
-  expirationDate: Date (obrigatório),
-  issuer: String (obrigatório),
-  status: String (enum: ['valid', 'expired', 'revoked']),
-  digitalHash: String (único),
-  metadata: {
-    workload: Number,
-    instructor: String,
-    location: String
-  },
-  createdAt: Date,
-  updatedAt: Date
-}
-```
+### 👥 Gestão de Usuários Multi-Empresa
+- **Sistema multi-tenant** com separação completa por empresa
+- **Controle de acesso baseado em roles** (Admin, Funcionário, Super Admin)
+- **Perfis de usuário** com foto e dados pessoais/profissionais
+- **Carteira digital personalizada** para cada funcionário
+- **Histórico completo** de atividades e certificações
 
-#### Coleção Companies
-```javascript
-{
-  _id: ObjectId,
-  name: String (obrigatório),
-  cnpj: String (único, obrigatório),
-  industry: String,
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String
-  },
-  settings: {
-    notificationDays: Number (padrão: 30),
-    allowSelfRegistration: Boolean (padrão: false)
-  },
-  createdAt: Date,
-  updatedAt: Date
-}
-```
+### 📊 Dashboard e Relatórios Avançados
+- **Métricas em tempo real** de certificações ativas/vencidas
+- **Mapa de calor** de conformidade por setor/funcionário
+- **Relatórios de conformidade** regulatória personalizáveis
+- **Alertas inteligentes** de vencimento via email/SMS/push
+- **Exportação de dados** em PDF, Excel e formatos digitais
 
 ## Estrutura do Projeto
 
@@ -318,9 +315,11 @@ certifi-industrial-hub/
 - **Proteção XSS** com cabeçalhos Content Security Policy
 - **Configuração CORS** com origens específicas por ambiente
 
-### Integridade de Certificados
-- **Assinaturas Digitais** para autenticidade de certificados
-- **Validação baseada em Hash** para detecção de alterações
+### Integridade de Certificados e QR Codes
+- **QR Codes criptografados** com algoritmos seguros (AES-256)
+- **Assinaturas digitais** incorporadas no QR Code para autenticidade
+- **Validação offline** através de dados embutidos no QR Code
+- **Timestamping** para rastreabilidade temporal das validações
 - **Integração Blockchain** (roadmap) para registros imutáveis
 
 ## Estratégia de Testes
