@@ -57,8 +57,8 @@ O sistema segue uma arquitetura orientada a microserviços com clara separação
 | Framework | Express.js | ^4.18.0 | Desenvolvimento de API RESTful |
 | Banco de Dados | MongoDB | ≥4.4.0 | Armazenamento orientado a documentos |
 | ODM | Mongoose | ^7.0.0 | Modelagem de objetos MongoDB |
-| Autenticação | JWT | ^9.0.0 | Autenticação stateless |
-| Validação | Joi/Yup | ^17.0.0 | Validação de payload de requisições |
+
+
 
 ### Infraestrutura Frontend  
 | Componente | Tecnologia | Versão | Propósito |
@@ -68,7 +68,7 @@ O sistema segue uma arquitetura orientada a microserviços com clara separação
 | Estilização | Tailwind CSS | ^3.3.0 | Framework CSS utility-first |
 | Roteamento | React Router | ^6.8.0 | Roteamento client-side |
 | Gerenciamento de Estado | Context API | Nativo | Gerenciamento de estado global |
-| Cliente HTTP | Axios | ^1.3.0 | Manipulação de requisições HTTP |
+
 
 ## Instalação e Configuração
 
@@ -94,57 +94,8 @@ git --version   # Última versão estável
    ```bash
    cd backend
    npm ci --only=production
-   ```
-
-3. **Variáveis de Ambiente**
    
-   Criar arquivo `.env` com a seguinte configuração:
-   
-   ```env
-   # Configuração do Banco de Dados
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/certificate-management?retryWrites=true&w=majority
-   
-   # Configuração do Servidor
-   NODE_ENV=production
-   PORT=5000
-   
-   # Configuração de Segurança
-   JWT_SECRET=sua-chave-secreta-256-bits-aqui
-   JWT_EXPIRES_IN=7d
-   BCRYPT_SALT_ROUNDS=12
-   
-   # Configuração CORS
-   CORS_ORIGIN=https://seu-dominio.com,https://seu-staging.com
-   
-   # Rate Limiting
-   RATE_LIMIT_WINDOW_MS=900000
-   RATE_LIMIT_MAX_REQUESTS=100
-   
-   # Configuração de Upload de Arquivos
-   MAX_FILE_SIZE=5242880
-   ALLOWED_FILE_TYPES=pdf,jpg,jpeg,png
-   ```
-
-4. **Inicialização do Banco de Dados**
-   ```bash
-   npm run db:migrate
-   npm run db:seed
-   ```
-
-5. **Configuração do Frontend**
-   ```bash
-   cd ../src
-   npm ci --only=production
-   ```
-
-6. **Inicialização da Aplicação**
-   ```bash
-   # Backend (Terminal 1)
-   cd backend && npm run start:prod
-   
-   # Frontend (Terminal 2)  
-   cd src && npm run build && npm run preview
-   ```
+  
 
 ## Documentação da API
 
@@ -243,63 +194,6 @@ GET    /api/v1/employees/:id/certificates # Obter certificados do funcionário
 - **Alertas inteligentes** de vencimento via email/SMS/push
 - **Exportação de dados** em PDF, Excel e formatos digitais
 
-## Estrutura do Projeto
-
-```
-certifi-industrial-hub/
-├── backend/                         # Aplicação backend
-│   ├── src/
-│   │   ├── controllers/            # Manipuladores de requisições
-│   │   │   ├── authController.js
-│   │   │   ├── certificateController.js
-│   │   │   ├── employeeController.js
-│   │   │   └── companyController.js
-│   │   ├── middleware/             # Middleware personalizado
-│   │   │   ├── auth.js
-│   │   │   ├── validation.js
-│   │   │   └── rateLimiter.js
-│   │   ├── models/                # Modelos do banco de dados
-│   │   │   ├── User.js
-│   │   │   ├── Certificate.js
-│   │   │   └── Company.js
-│   │   ├── routes/                # Rotas da API
-│   │   │   ├── auth.js
-│   │   │   ├── certificates.js
-│   │   │   ├── employees.js
-│   │   │   └── companies.js
-│   │   ├── services/              # Lógica de negócio
-│   │   │   ├── authService.js
-│   │   │   ├── certificateService.js
-│   │   │   └── notificationService.js
-│   │   └── utils/                 # Funções utilitárias
-│   │       ├── logger.js
-│   │       ├── encryption.js
-│   │       └── validators.js
-│   ├── tests/                     # Testes do backend
-│   ├── docs/                      # Documentação da API
-│   ├── package.json
-│   └── server.js                  # Ponto de entrada da aplicação
-├── src/                           # Aplicação frontend
-│   ├── components/                # Componentes reutilizáveis
-│   │   ├── ui/                   # Componentes de UI base
-│   │   ├── forms/                # Componentes de formulário
-│   │   └── layout/               # Componentes de layout
-│   ├── pages/                    # Componentes de página
-│   │   ├── admin/               # Interface do administrador
-│   │   ├── employee/            # Interface do funcionário
-│   │   └── superadmin/          # Interface do super administrador
-│   ├── hooks/                   # Custom React hooks
-│   ├── services/               # Camada de serviços da API
-│   ├── utils/                  # Utilitários do frontend
-│   ├── types/                  # Definições de tipos TypeScript
-│   └── __tests__/             # Testes do frontend
-├── docs/                       # Documentação do projeto
-├── scripts/                   # Scripts de deployment e utilitários
-├── .github/                  # Workflows e templates do GitHub
-├── docker-compose.yml       # Orquestração de containers
-├── Dockerfile              # Definição do container
-└── README.md
-```
 
 ## Implementação de Segurança
 
@@ -322,34 +216,6 @@ certifi-industrial-hub/
 - **Timestamping** para rastreabilidade temporal das validações
 - **Integração Blockchain** (roadmap) para registros imutáveis
 
-## Estratégia de Testes
-
-### Testes do Backend
-```bash
-# Testes Unitários
-npm run test:unit
-
-# Testes de Integração  
-npm run test:integration
-
-# Testes E2E
-npm run test:e2e
-
-# Relatório de Cobertura
-npm run test:coverage
-```
-
-### Testes do Frontend
-```bash
-# Testes de Componentes
-npm run test:components
-
-# Testes de Integração
-npm run test:integration
-
-# Testes de Regressão Visual
-npm run test:visual
-```
 
 ## Otimização de Performance
 
@@ -365,49 +231,6 @@ npm run test:visual
 - **Estratégias de Cache** com Redis (roadmap)
 - **Integração CDN** para assets estáticos
 
-## Deployment
-
-### Deploy de Produção
-
-1. **Build do Container**
-   ```bash
-   docker build -t certifi-hub:latest .
-   ```
-
-2. **Configuração do Ambiente**
-   ```bash
-   # Definir variáveis de ambiente de produção
-   export NODE_ENV=production
-   export MONGODB_URI=mongodb+srv://prod-cluster...
-   ```
-
-3. **Inicialização da Aplicação**
-   ```bash
-   docker-compose up -d
-   ```
-
-### Pipeline CI/CD
-
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy para Produção
-on:
-  push:
-    branches: [main]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Executar Testes
-        run: npm test
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy para AWS ECS
-        run: aws ecs update-service...
-```
 
 ## Monitoramento e Logging
 
@@ -422,37 +245,7 @@ jobs:
 - **Rastreamento do Ciclo de Vida dos Certificados** para auditorias regulatórias
 - **Log de Eventos do Sistema** para depuração e análise
 
-## Padrões de Conformidade
 
-### Framework Regulatório Brasileiro
-| Padrão | Implementação | Nível de Conformidade |
-|--------|---------------|----------------------|
-| NR-01 a NR-37 | Templates de certificados e regras de validação | ✅ Completo |
-| CLT (Código Trabalhista) | Proteção e privacidade de dados de funcionários | ✅ Completo |
-| LGPD | Tratamento de dados pessoais e consentimento | ✅ Completo |
-
-### Padrões Internacionais
-| Padrão | Implementação | Nível de Conformidade |
-|--------|---------------|----------------------|
-| ISO 27001 | Gestão de segurança da informação | 🔄 Em Progresso |
-| ISO 9001 | Sistema de gestão da qualidade | ✅ Completo |
-| SOC 2 Type II | Controles de segurança e disponibilidade | 📋 Planejado |
-
-## Contribuição
-
-### Fluxo de Desenvolvimento
-1. Fazer fork do repositório
-2. Criar branch de feature (`git checkout -b feature/nova-funcionalidade`)
-3. Implementar mudanças seguindo padrões de codificação
-4. Adicionar testes abrangentes
-5. Atualizar documentação
-6. Submeter pull request com descrição detalhada
-
-### Padrões de Código
-- **ESLint + Prettier** para formatação de código
-- **Conventional Commits** para mensagens de commit
-- **JSDoc** para documentação de funções
-- **Cobertura de Testes** mínima de 80%
 
 ## Licença
 
