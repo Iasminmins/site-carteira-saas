@@ -59,7 +59,9 @@ const SuperAdminDashboard = () => {
   ];
   
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="flex flex-col h-screen bg-gray-50">
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Painel de Controle - SaaS</h1>
@@ -306,6 +308,8 @@ const SuperAdminDashboard = () => {
           </div>
         </TabsContent>
       </Tabs>
+        </div>
+      </div>
     </div>
   );
 };

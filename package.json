@@ -8,7 +8,10 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tunnel:ngrok": "echo 'Execute em outro terminal: npx ngrok http 8080' && echo 'Depois configure o .env com a URL do ngrok' && npm run dev",
+    "tunnel:lt": "echo 'Execute em outro terminal: npx localtunnel --port 8080 --subdomain meucertificado' && echo 'Depois configure o .env com a URL' && npm run dev",
+    "help:qrcode": "echo 'Leia: docs/SETUP_QRCODE_MOBILE.md para configurar QR codes'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

@@ -18,6 +18,17 @@ export interface Certificate {
   updatedAt?: string;
 }
 
+// Extended certificate with populated employee data
+export interface CertificateWithEmployee extends Omit<Certificate, 'employeeId'> {
+  employeeId: {
+    _id: string;
+    id?: string;
+    name: string;
+    matricula: string;
+    photo: string;
+  };
+}
+
 // Hook for certificate-related API calls
 export const useCertificateService = () => {
   const { api } = useApi();
@@ -31,6 +42,12 @@ export const useCertificateService = () => {
 
   // Get certificate by ID
   const getCertificateById = async (id: string): Promise<Certificate> => {
+    const response = await api.get(`/certificates/${id}`);
+    return response.data;
+  };
+
+  // Get certificate by ID with employee data populated
+  const getCertificateByIdWithEmployee = async (id: string): Promise<CertificateWithEmployee> => {
     const response = await api.get(`/certificates/${id}`);
     return response.data;
   };
@@ -70,6 +87,12 @@ export const useCertificateService = () => {
     enabled: !!id,
   });
 
+  const useCertificateWithEmployee = (id: string) => useQuery({
+    queryKey: ['certificateWithEmployee', id],
+    queryFn: () => getCertificateByIdWithEmployee(id),
+    enabled: !!id,
+  });
+
   const useEmployeeCertificates = (employeeId: string) => useQuery({
     queryKey: ['employeeCertificates', employeeId],
     queryFn: () => getCertificatesByEmployeeId(employeeId),
@@ -104,6 +127,7 @@ export const useCertificateService = () => {
   return {
     useCertificates,
     useCertificate,
+    useCertificateWithEmployee,
     useEmployeeCertificates,
     useCreateCertificate,
     useUpdateCertificate,

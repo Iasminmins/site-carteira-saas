@@ -73,7 +73,9 @@ const CompanyManagement = () => {
   };
   
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="flex flex-col h-screen bg-gray-50">
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Gerenciamento de Empresas</h1>
@@ -324,6 +326,8 @@ const CompanyManagement = () => {
           </Button>
         </CardFooter>
       </Card>
+        </div>
+      </div>
     </div>
   );
 };

@@ -101,13 +101,12 @@ const EmployeesManagement = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleMenu} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleMenu} showMenuToggle={true} />
-        <div className="flex-1 overflow-auto">
-          <ScrollArea className="h-full">
-            <main className="p-4 md:p-6 max-w-7xl mx-auto pb-20">
+        <div className="flex-1 overflow-y-auto">
+          <main className="p-4 md:p-6 max-w-7xl mx-auto pb-20">
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">Gerenciamento de Colaboradores</h1>
@@ -276,7 +275,6 @@ const EmployeesManagement = () => {
                 </CardContent>
               </Card>
             </main>
-          </ScrollArea>
         </div>
       </div>
     </div>

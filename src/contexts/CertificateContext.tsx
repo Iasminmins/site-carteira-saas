@@ -1,6 +1,7 @@
 
 import { createContext, useState, useContext, ReactNode } from "react";
 import { toast } from "sonner";
+import { generateCertificateQRCode } from "@/lib/qrcode";
 
 type Certificate = {
   id: string;
@@ -98,6 +99,7 @@ const mockEmployees: Employee[] = [
   }
 ];
 
+// Generate QR codes dynamically using the configured domain
 const mockCertificates: Certificate[] = [
   {
     id: "cert-001",
@@ -106,7 +108,7 @@ const mockCertificates: Certificate[] = [
     issuedDate: new Date('2023-01-15'),
     expiryDate: new Date('2025-01-15'),
     status: "valid",
-    qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-001",
+    qrCode: generateCertificateQRCode("cert-001"),
     employeeId: "2",
     employeeName: "Carlos Oliveira",
     employeePhoto: "https://i.pravatar.cc/150?img=12",
@@ -119,7 +121,7 @@ const mockCertificates: Certificate[] = [
     issuedDate: new Date('2023-02-10'),
     expiryDate: new Date('2025-02-10'),
     status: "valid",
-    qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-002",
+    qrCode: generateCertificateQRCode("cert-002"),
     employeeId: "2",
     employeeName: "Carlos Oliveira",
     employeePhoto: "https://i.pravatar.cc/150?img=12",
@@ -132,7 +134,7 @@ const mockCertificates: Certificate[] = [
     issuedDate: new Date('2022-05-15'),
     expiryDate: new Date('2023-05-15'),
     status: "expired",
-    qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-003",
+    qrCode: generateCertificateQRCode("cert-003"),
     employeeId: "2",
     employeeName: "Carlos Oliveira",
     employeePhoto: "https://i.pravatar.cc/150?img=12",
@@ -145,7 +147,7 @@ const mockCertificates: Certificate[] = [
     issuedDate: new Date('2023-03-20'),
     expiryDate: new Date('2023-06-20'),
     status: "expiring",
-    qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-004",
+    qrCode: generateCertificateQRCode("cert-004"),
     employeeId: "2",
     employeeName: "Carlos Oliveira",
     employeePhoto: "https://i.pravatar.cc/150?img=12",
@@ -158,7 +160,7 @@ const mockCertificates: Certificate[] = [
     issuedDate: new Date('2023-01-05'),
     expiryDate: new Date('2026-01-05'),
     status: "valid",
-    qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-005",
+    qrCode: generateCertificateQRCode("cert-005"),
     employeeId: "3",
     employeeName: "Ana Beatriz",
     employeePhoto: "https://i.pravatar.cc/150?img=5",
@@ -171,7 +173,7 @@ const mockCertificates: Certificate[] = [
     issuedDate: new Date('2022-11-10'),
     expiryDate: new Date('2023-11-10'),
     status: "expiring",
-    qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=cert-006",
+    qrCode: generateCertificateQRCode("cert-006"),
     employeeId: "4", 
     employeeName: "Roberto Martins",
     employeePhoto: "https://i.pravatar.cc/150?img=20",
@@ -193,8 +195,9 @@ export const CertificateProvider = ({ children }: { children: ReactNode }) => {
     try {
       // Generate a unique ID
       const id = `cert-${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`;
-      // Generate QR code URL
-      const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${id}`;
+      
+      // Generate QR code using utility function
+      const qrCode = generateCertificateQRCode(id, 150);
       
       const newCertificate: Certificate = {
         ...certificateData,

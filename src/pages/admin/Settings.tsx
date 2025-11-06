@@ -62,15 +62,16 @@ const Settings = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleMenu} />
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleMenu} showMenuToggle={true} />
-        <main className="p-4 md:p-6 max-w-4xl mx-auto">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Configurações</h1>
-            <p className="text-gray-600">Gerencie suas preferências e informações de perfil</p>
-          </div>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-900">Configurações</h1>
+              <p className="text-gray-600">Gerencie suas preferências e informações de perfil</p>
+            </div>
 
           <Tabs defaultValue="profile" className="w-full">
             <TabsList className="grid grid-cols-3 mb-6">
@@ -291,6 +292,7 @@ const Settings = () => {
               </Card>
             </TabsContent>
           </Tabs>
+          </div>
         </main>
       </div>
     </div>

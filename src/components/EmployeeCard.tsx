@@ -20,6 +20,7 @@ import { FileText, Award, Badge as CertificateBadge, IdCard, QrCode, Check } fro
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { generateQRCode } from "@/lib/qrcode";
 
 interface EmployeeCardProps {
   name: string;
@@ -43,6 +44,10 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
   const validCertificates = certificates.filter(cert => cert.status === "valid").length;
   const expiringCertificates = certificates.filter(cert => cert.status === "expiring").length;
   const expiredCertificates = certificates.filter(cert => cert.status === "expired").length;
+  
+  // Gera QR Code para a página pública do funcionário (mostra TODOS os certificados)
+  const employeeUrl = `${window.location.origin}/employee/${id}`;
+  const qrCodeUrl = generateQRCode(employeeUrl, 120);
   
   // Format date for display
   const formatDate = (date: Date) => {
@@ -73,8 +78,8 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
                 background-color: #f8f8f8;
               }
               .card-container {
-                width: 10.6cm; 
-                height: 15cm;
+                width: 7cm; 
+                height: 10cm;
                 margin: 20px auto;
                 background: #fff;
                 border: 1px dashed #000;
@@ -90,39 +95,42 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
                 border-bottom: 1px dashed #000;
               }
               .company-logo {
-                width: 70px;
-                height: 70px;
+                width: 40px;
+                height: 40px;
                 border: 1px dashed #000;
-                margin-right: 15px;
+                margin-right: 8px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-weight: bold;
+                font-size: 9px;
               }
               .header-title {
                 flex: 1;
               }
               .card-title {
                 margin: 0;
-                font-size: 16px;
+                font-size: 10px;
                 font-weight: 700;
                 text-transform: uppercase;
               }
               .photo-placeholder {
-                width: 120px;
-                height: 150px;
+                width: 65px;
+                height: 80px;
                 border: 1px dashed #000;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                margin: 10px;
+                margin: 4px 0;
+                font-size: 8px;
               }
               .employee-info {
-                padding: 10px;
+                padding: 6px;
                 border-bottom: 1px dashed #000;
+                font-size: 8px;
               }
               .info-row {
-                margin-bottom: 5px;
+                margin-bottom: 2px;
               }
               .info-label {
                 font-weight: 700;
@@ -135,7 +143,8 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
               .auth-column {
                 flex: 1;
                 border-right: 1px dashed #000;
-                padding: 10px;
+                padding: 4px;
+                font-size: 7px;
               }
               .auth-column:last-child {
                 border-right: none;
@@ -143,21 +152,21 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
               .auth-header {
                 font-weight: bold;
                 text-align: center;
-                margin-bottom: 10px;
-                font-size: 12px;
+                margin-bottom: 4px;
+                font-size: 7px;
                 text-transform: uppercase;
               }
               .auth-item {
                 display: flex;
-                margin-bottom: 5px;
-                font-size: 11px;
+                margin-bottom: 2px;
+                font-size: 6px;
               }
               .auth-checkbox {
-                width: 14px;
-                height: 14px;
+                width: 8px;
+                height: 8px;
                 border: 1px solid #000;
-                margin-right: 5px;
-                font-size: 10px;
+                margin-right: 3px;
+                font-size: 6px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -174,25 +183,38 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
               }
               .signatures {
                 display: flex;
-                padding: 10px;
+                padding: 4px;
                 border-top: 1px dashed #000;
               }
               .signature-box {
                 flex: 1;
                 text-align: center;
-                padding: 5px;
-                font-size: 10px;
+                padding: 2px;
+                font-size: 6px;
               }
               .signature-line {
-                height: 40px;
+                height: 18px;
                 border-bottom: 1px solid #000;
-                margin-bottom: 5px;
+                margin-bottom: 2px;
               }
               .emergency-contacts {
-                padding: 10px;
-                font-size: 10px;
+                padding: 4px;
+                font-size: 6px;
                 text-align: center;
                 border-top: 1px dashed #000;
+              }
+              .qrcode-section {
+                padding: 4px;
+                text-align: center;
+                border-top: 1px dashed #000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              }
+              .qrcode-img {
+                width: 45px;
+                height: 45px;
+                border: 1px solid #000;
               }
               @media print {
                 body { background: none; }
@@ -203,7 +225,7 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
                   margin: 0;
                 }
                 @page {
-                  size: 11cm 15.5cm;
+                  size: 7.5cm 10.5cm;
                   margin: 0;
                 }
               }
@@ -212,7 +234,7 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
           <body onload="setTimeout(function() { window.print(); }, 500)">
             <div class="card-container">
               <div class="card-header">
-                <div class="company-logo">CBSI</div>
+                <div class="company-logo">Logo</div>
                 <div class="header-title">
                   <h1 class="card-title">Carteira de Autorização</h1>
                   <div class="photo-placeholder">
@@ -276,19 +298,29 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
               <div class="signatures">
                 <div class="signature-box">
                   <div class="signature-line"></div>
-                  <div>SESMT CBSI<br/>ELABORADO POR:</div>
+                  <div>SESMT<br/>ELABORADO POR:</div>
                 </div>
                 <div class="signature-box">
                   <div class="signature-line"></div>
-                  <div>SESMT CBSI<br/>APROVADO POR:</div>
+                  <div>SESMT<br/>APROVADO POR:</div>
                 </div>
+              </div>
+              
+              <!-- QR Code Section -->
+              <div class="qrcode-section">
+                ${qrCodeUrl ? `
+                  <div>
+                    <img src="${qrCodeUrl}" alt="QR Code" class="qrcode-img" />
+                    <div style="font-size: 7px; margin-top: 3px;">Escaneie para verificar</div>
+                  </div>
+                ` : ''}
               </div>
               
               <div class="emergency-contacts">
                 <strong>RAMAIS DE EMERGÊNCIA</strong><br/>
-                SESMT CBSI: 33443866 / Posto médico CBSI: 3344307<br/>
-                Bombeiro CSN: 33444000-5555 / Ambulância CSN: 33444455<br/>
-                Guarda Patrimonial CSN: 33444888-4673
+                SESMT: 33443866 / Posto médico: 33407<br/>
+                Bombeiro: 33444000-5555 / Ambulância: 33455<br/>
+                Guarda Patrimonial: 33444888-4673
               </div>
             </div>
           </body>
@@ -313,108 +345,122 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
         
         <ScrollArea className="max-h-[70vh]">
           <div id="employee-card-print" className="mt-4">
-            <Card className="border-2 border-dashed border-black" style={{ width: '10.6cm', margin: '0 auto' }}>
+            <Card className="border-2 border-dashed border-black" style={{ width: '7cm', margin: '0 auto' }}>
               {/* Header with logo and title */}
-              <div className="flex p-3 border-b border-dashed border-black">
-                <div className="flex items-center justify-center w-16 h-16 border border-dashed border-black mr-3 font-bold">
-                  CBSI
+              <div className="flex p-1.5 border-b border-dashed border-black">
+                <div className="flex items-center justify-center w-10 h-10 border border-dashed border-black mr-2 font-bold text-[9px]">
+                  LOGO
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold uppercase">Carteira de Autorização</h3>
-                  <div className="flex items-center justify-center w-24 h-28 border border-dashed border-black mt-2 text-xs text-center">
+                  <h3 className="text-[10px] font-bold uppercase">Carteira de Autorização</h3>
+                  <div className="flex items-center justify-center w-16 h-20 border border-dashed border-black mt-1 text-[8px] text-center leading-tight px-1">
                     Portar documento com foto
                   </div>
                 </div>
               </div>
               
               {/* Employee info */}
-              <div className="p-3 border-b border-dashed border-black">
-                <div className="mb-1">
+              <div className="p-1.5 border-b border-dashed border-black text-[8px]">
+                <div className="mb-0.5">
                   <span className="font-bold">Nome:</span> {name}
                 </div>
-                <div className="mb-1">
+                <div className="mb-0.5">
                   <span className="font-bold">Matrícula:</span> {id}
                 </div>
-                <div className="mb-1">
+                <div className="mb-0.5">
                   <span className="font-bold">Função:</span> {certificates[0]?.type || 'N/A'}
                 </div>
-                <div className="mb-1">
+                <div className="mb-0.5">
                   <span className="font-bold">Contrato:</span> TÉCNICO MANUTENÇÃO
                 </div>
-                <div className="mb-1">
+                <div className="mb-0.5">
                   <span className="font-bold">Integração:</span> {formatDate(new Date())}
-                  <span className="ml-4 font-bold">ASO:</span> {formatDate(new Date(Date.now() + 30*24*60*60*1000))}
+                  <span className="ml-2 font-bold">ASO:</span> {formatDate(new Date(Date.now() + 30*24*60*60*1000))}
                 </div>
               </div>
               
               {/* Authorization columns */}
               <div className="flex">
-                <div className="w-1/2 p-2 border-r border-dashed border-black">
-                  <div className="text-xs font-bold uppercase text-center mb-2">
+                <div className="w-1/2 p-1 border-r border-dashed border-black">
+                  <div className="text-[7px] font-bold uppercase text-center mb-1">
                     Trabalhador Autorizado / Validade
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     {certificates.slice(0, 7).map((cert, idx) => (
-                      <div key={idx} className="flex items-center text-xs">
-                        <div className={`w-4 h-4 border border-black mr-1 flex items-center justify-center ${cert.status === 'valid' ? 'bg-gray-200' : ''}`}>
-                          {cert.status === 'valid' && <Check size={10} />}
+                      <div key={idx} className="flex items-center text-[6px]">
+                        <div className={`w-2 h-2 border border-black mr-0.5 flex items-center justify-center ${cert.status === 'valid' ? 'bg-gray-200' : ''}`}>
+                          {cert.status === 'valid' && <Check size={6} />}
                         </div>
-                        <div className="flex-1">{cert.type}</div>
-                        <div className="w-16 text-right">{formatDate(cert.expiryDate)}</div>
+                        <div className="flex-1 leading-tight">{cert.type}</div>
+                        <div className="w-12 text-right">{formatDate(cert.expiryDate)}</div>
                       </div>
                     ))}
                   </div>
                 </div>
                 
-                <div className="w-1/2 p-2">
-                  <div className="text-xs font-bold uppercase text-center mb-2">
+                <div className="w-1/2 p-1">
+                  <div className="text-[7px] font-bold uppercase text-center mb-1">
                     Operação/Execução
                   </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center text-xs">
-                      <div className="w-4 h-4 border border-black mr-1"></div>
-                      <div className="flex-1">DIREÇÃO DEFENSIVA</div>
-                      <div className="w-16 text-right">__/__/__</div>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center text-[6px]">
+                      <div className="w-2 h-2 border border-black mr-0.5"></div>
+                      <div className="flex-1 leading-tight">DIREÇÃO DEFENSIVA</div>
+                      <div className="w-12 text-right">__/__/__</div>
                     </div>
-                    <div className="flex items-center text-xs">
-                      <div className="w-4 h-4 border border-black mr-1"></div>
-                      <div className="flex-1">VEÍCULO DE GRANDE PORTE</div>
-                      <div className="w-16 text-right">__/__/__</div>
+                    <div className="flex items-center text-[6px]">
+                      <div className="w-2 h-2 border border-black mr-0.5"></div>
+                      <div className="flex-1 leading-tight">VEÍCULO GRANDE PORTE</div>
+                      <div className="w-12 text-right">__/__/__</div>
                     </div>
-                    <div className="flex items-center text-xs">
-                      <div className="w-4 h-4 border border-black mr-1"></div>
-                      <div className="flex-1">TRABALHO A QUENTE</div>
-                      <div className="w-16 text-right">__/__/__</div>
+                    <div className="flex items-center text-[6px]">
+                      <div className="w-2 h-2 border border-black mr-0.5"></div>
+                      <div className="flex-1 leading-tight">TRABALHO A QUENTE</div>
+                      <div className="w-12 text-right">__/__/__</div>
                     </div>
                   </div>
                 </div>
               </div>
               
               {/* Signatures */}
-              <div className="flex p-2 border-t border-dashed border-black">
+              <div className="flex p-1 border-t border-dashed border-black">
                 <div className="flex-1 text-center">
-                  <div className="h-12 border-b border-black mb-1"></div>
-                  <div className="text-xs">
-                    SESMT CBSI<br />
+                  <div className="h-6 border-b border-black mb-0.5"></div>
+                  <div className="text-[6px] leading-tight">
+                    SESMT<br />
                     ELABORADO POR:
                   </div>
                 </div>
                 <div className="flex-1 text-center">
-                  <div className="h-12 border-b border-black mb-1"></div>
-                  <div className="text-xs">
-                    SESMT CBSI<br />
+                  <div className="h-6 border-b border-black mb-0.5"></div>
+                  <div className="text-[6px] leading-tight">
+                    SESMT<br />
                     APROVADO POR:
                   </div>
                 </div>
               </div>
               
+              {/* QR Code Section */}
+              <div className="p-1.5 border-t border-dashed border-black text-center">
+                {qrCodeUrl && (
+                  <>
+                    <img 
+                      src={qrCodeUrl} 
+                      alt="QR Code" 
+                      className="w-11 h-11 mx-auto border border-black"
+                    />
+                    <div className="text-[6px] mt-0.5">Escaneie para verificar</div>
+                  </>
+                )}
+              </div>
+              
               {/* Emergency contacts */}
-              <div className="p-2 border-t border-dashed border-black text-center">
-                <div className="text-xs font-bold">RAMAIS DE EMERGÊNCIA</div>
-                <div className="text-[10px]">
-                  SESMT CBSI: 33443866 / Posto médico CBSI: 3344307<br/>
-                  Bombeiro CSN: 33444000-5555 / Ambulância CSN: 33444455<br/>
-                  Guarda Patrimonial CSN: 33444888-4673
+              <div className="p-1 border-t border-dashed border-black text-center">
+                <div className="text-[7px] font-bold">RAMAIS DE EMERGÊNCIA</div>
+                <div className="text-[6px] leading-tight">
+                  SESMT: 33443866 / Posto médico: 3344307<br/>
+                  Bombeiro: 33444000-5555 / Ambulância: 33444455<br/>
+                  Guarda Patrimonial: 33444888-4673
                 </div>
               </div>
             </Card>

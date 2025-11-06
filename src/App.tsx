@@ -17,6 +17,7 @@ import Settings from "./pages/admin/Settings";
 import NewCertificate from "./pages/admin/NewCertificate";
 import EmployeeCertificates from "./pages/employee/EmployeeCertificates";
 import PublicCertificate from "./pages/PublicCertificate";
+import PublicEmployee from "./pages/PublicEmployee";
 import NotFound from "./pages/NotFound";
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
 import CompanyManagement from "./pages/superadmin/CompanyManagement";
@@ -155,6 +156,9 @@ const App = () => (
               
               {/* Public Certificate View */}
               <Route path="/certificate/:id" element={<PublicCertificate />} />
+              
+              {/* Public Employee View - Shows all certificates */}
+              <Route path="/employee/:id" element={<PublicEmployee />} />
               
               {/* Not Found */}
               <Route path="*" element={<NotFound />} />

@@ -84,7 +84,7 @@ const CertificatesManagement = () => {
     : null;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleMenu} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header showMenuToggle={true} toggleSidebar={toggleMenu} />

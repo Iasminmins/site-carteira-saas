@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -46,58 +45,78 @@ export function CertificateCard({
   
   return (
     <Card 
-      className="card-hover cursor-pointer relative" 
+      className="card-hover cursor-pointer overflow-hidden w-full max-w-sm mx-auto" 
       onClick={onClick}
-      style={{ 
-        width: '10.6cm',
-        height: '6.6cm',
-        margin: '0 auto',
-        padding: '0.5cm', // Garantindo margens internas de 0.5cm
-        boxSizing: 'border-box'
-      }}
     >
-      <div className="absolute top-0 left-0 w-full bg-industrial-blue text-white py-2 px-4 flex items-center">
-        <div className="h-5 w-5 rounded-full bg-industrial-yellow mr-2"></div>
-        <span className="text-sm font-bold">CARTEIRINHA PROFISSIONAL</span>
+      {/* Header com cor de destaque */}
+      <div className="bg-industrial-blue text-white py-2 px-3 flex items-center gap-2">
+        <div className="h-4 w-4 rounded-full bg-industrial-yellow flex-shrink-0"></div>
+        <span className="text-xs font-bold uppercase tracking-wide">Carteirinha Profissional</span>
       </div>
       
-      <CardHeader className="pb-2 pt-8">
-        <div className="flex justify-between items-start">
-          <Badge variant="outline" className="bg-industrial-blue/10 text-industrial-blue">
+      <CardHeader className="pb-3 pt-3 px-4 space-y-2">
+        {/* Badges de tipo e status */}
+        <div className="flex justify-between items-start gap-2">
+          <Badge variant="outline" className="bg-industrial-blue/10 text-industrial-blue text-xs px-2 py-0.5">
             {type}
           </Badge>
-          <Badge variant={status === "valid" ? "outline" : status === "expired" ? "destructive" : "secondary"}>
+          <Badge 
+            variant={status === "valid" ? "outline" : status === "expired" ? "destructive" : "secondary"}
+            className="text-xs px-2 py-0.5"
+          >
             {label}
           </Badge>
         </div>
-        <CardTitle className="text-base mt-2 line-clamp-2">{title}</CardTitle>
+        
+        {/* Título do certificado */}
+        <CardTitle className="text-sm font-semibold leading-tight line-clamp-2 min-h-[2.5rem]">
+          {title}
+        </CardTitle>
       </CardHeader>
       
-      <CardContent className="pb-2">
+      <CardContent className="pb-2 pt-0 px-4 space-y-3">
+        {/* Informações do colaborador (se mostrar) */}
         {showEmployee && (
-          <div className="flex items-center mb-3">
-            <div className="h-8 w-8 rounded-full overflow-hidden bg-gray-200">
-              {employeePhoto && <img src={employeePhoto} alt={employeeName} className="h-full w-full object-cover" />}
+          <div className="flex items-center gap-2 pb-2 border-b">
+            <div className="h-8 w-8 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+              {employeePhoto && (
+                <img 
+                  src={employeePhoto} 
+                  alt={employeeName} 
+                  className="h-full w-full object-cover"
+                />
+              )}
             </div>
-            <span className="ml-2 text-sm font-medium">{employeeName}</span>
+            <span className="text-xs font-medium truncate flex-1">{employeeName}</span>
           </div>
         )}
-        <div className="flex items-center justify-between">
+        
+        {/* Datas de emissão e validade */}
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <p className="text-xs text-muted-foreground">Emissão</p>
-            <p className="text-sm font-medium">{format(issuedDate, 'dd/MM/yyyy')}</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Emissão</p>
+            <p className="text-xs font-semibold mt-0.5">{format(issuedDate, 'dd/MM/yyyy')}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-muted-foreground">Validade</p>
-            <p className={`text-sm font-medium ${color}`}>{format(expiryDate, 'dd/MM/yyyy')}</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Validade</p>
+            <p className={`text-xs font-semibold mt-0.5 ${color}`}>
+              {format(expiryDate, 'dd/MM/yyyy')}
+            </p>
           </div>
         </div>
       </CardContent>
       
-      <CardFooter>
-        <div className="flex-1 flex justify-center items-center py-2">
-          {qrCode && <img src={qrCode} alt="QR Code" className="h-20 w-20" />}
-        </div>
+      {/* QR Code no rodapé */}
+      <CardFooter className="pb-3 pt-2 px-4 flex justify-center border-t bg-gray-50/50">
+        {qrCode && (
+          <div className="relative w-16 h-16 flex items-center justify-center">
+            <img 
+              src={qrCode} 
+              alt="QR Code" 
+              className="w-full h-full object-contain"
+            />
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

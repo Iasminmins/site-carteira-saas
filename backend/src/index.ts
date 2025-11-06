@@ -21,8 +21,13 @@ const app = express();
 // 4.1 Habilita CORS (caso queira configurar origens específicas, edite as opções abaixo)
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN?.split(',') || '*', // você pode colocar uma lista de domínios separados por vírgula no .env
+    origin: (origin, callback) => {
+      // Permite qualquer origem (útil para desenvolvimento com ngrok)
+      // Em produção, você deve restringir para domínios específicos
+      callback(null, true);
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true
   })
 );
 

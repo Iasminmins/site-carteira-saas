@@ -54,7 +54,7 @@
   }
 
   html, body, #root {
-    @apply h-full overflow-hidden;
+    @apply h-full;
   }
 
   body {
@@ -105,8 +105,8 @@
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Estilos para a carteirinha no formato CBSI */
-  .cbsi-card {
+  /* Estilos para a carteirinha no formato */
+  .teste-card {
     width: 10.6cm;
     height: 15cm;
     margin: 0 auto;

@@ -1,29 +1,47 @@
 
 import { useParams } from "react-router-dom";
-import { useCertificates } from "@/contexts/CertificateContext";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Printer, QrCode } from "lucide-react";
+import { ArrowLeft, Printer, Loader2, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useCertificateService } from "@/services/certificateService";
 
 const PublicCertificate = () => {
   const { id } = useParams<{ id: string }>();
-  const { getCertificate } = useCertificates();
+  const { useCertificateWithEmployee } = useCertificateService();
   const navigate = useNavigate();
   
-  const certificate = id ? getCertificate(id) : undefined;
+  // Buscar certificado da API com dados do funcionário
+  const { data: certificate, isLoading, error } = useCertificateWithEmployee(id || "");
   
-  if (!certificate) {
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="p-8 max-w-md w-full text-center shadow-xl">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-industrial-blue" />
+          <p className="text-gray-600">Carregando certificado...</p>
+        </Card>
+      </div>
+    );
+  }
+  
+  // Error or not found state
+  if (!certificate || error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <Card className="p-6 max-w-md w-full text-center">
-          <h1 className="text-xl font-semibold mb-2">Certificado não encontrado</h1>
-          <p className="text-gray-600 mb-4">O certificado solicitado não existe ou foi removido.</p>
-          <Button onClick={() => navigate("/")}>Voltar ao Início</Button>
+        <Card className="p-8 max-w-md w-full text-center shadow-xl">
+          <div className="flex justify-center mb-4">
+            <XCircle className="w-16 h-16 text-red-500" />
+          </div>
+          <h1 className="text-2xl font-bold mb-2">Certificado não encontrado</h1>
+          <p className="text-gray-600 mb-6">O certificado solicitado não existe ou foi removido.</p>
+          <Button onClick={() => navigate("/")} className="w-full">
+            Voltar ao Início
+          </Button>
         </Card>
       </div>
     );
@@ -50,7 +68,7 @@ const PublicCertificate = () => {
   
   return (
     <div className="h-screen flex flex-col bg-gray-50">
-      <ScrollArea className="flex-1">
+      <div className="flex-1 overflow-y-auto">
         <div className="p-4">
           <div className="max-w-md mx-auto mt-8">
             <div className="flex justify-between items-center mb-4">
@@ -71,21 +89,24 @@ const PublicCertificate = () => {
               </Button>
             </div>
             
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden border animate-fade-in print:shadow-none print:border">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden border max-w-md mx-auto animate-fade-in print:shadow-none print:border">
+              {/* Header */}
               <div className="bg-industrial-blue text-white p-4">
-                <div className="flex items-center">
-                  <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center flex-shrink-0">
                     <div className="h-6 w-6 rounded-full bg-industrial-yellow"></div>
                   </div>
-                  <div className="ml-3">
-                    <h1 className="text-xl font-bold">Carteira Digital</h1>
-                    <p className="text-sm opacity-80">Verificação de Certificado</p>
+                  <div>
+                    <h1 className="text-lg font-bold">Carteira Digital</h1>
+                    <p className="text-xs opacity-90">Verificação de Certificado</p>
                   </div>
                 </div>
               </div>
               
-              <div className="p-5">
-                <div className="flex justify-between items-center mb-6">
+              {/* Content */}
+              <div className="p-4 space-y-4">
+                {/* Status Badges */}
+                <div className="flex justify-between items-center">
                   <Badge className={className}>
                     {label}
                   </Badge>
@@ -94,35 +115,42 @@ const PublicCertificate = () => {
                   </Badge>
                 </div>
                 
-                <div className="flex mb-6">
-                  <div className="h-20 w-20 rounded overflow-hidden bg-gray-200 flex-shrink-0">
-                    {certificate.employeePhoto && (
+                {/* Employee Info */}
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="h-16 w-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
+                    {certificate.employeeId?.photo && (
                       <img 
-                        src={certificate.employeePhoto} 
-                        alt={certificate.employeeName} 
+                        src={certificate.employeeId.photo} 
+                        alt={certificate.employeeId.name} 
                         className="h-full w-full object-cover"
                       />
                     )}
                   </div>
-                  <div className="ml-4">
-                    <h2 className="font-semibold text-lg">{certificate.employeeName}</h2>
-                    <p className="text-sm text-gray-600">ID: {certificate.employeeId}</p>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="font-semibold text-base truncate">
+                      {certificate.employeeId?.name || 'Funcionário'}
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                      Matrícula: {certificate.employeeId?.matricula || 'N/A'}
+                    </p>
                   </div>
                 </div>
                 
-                <div className="border-t border-b py-4 mb-4">
-                  <h3 className="font-medium mb-1">Certificado:</h3>
-                  <p>{certificate.title}</p>
+                {/* Certificate Title */}
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                  <p className="text-xs text-blue-600 font-medium mb-1">Certificado:</p>
+                  <p className="text-sm font-semibold text-gray-900">{certificate.title}</p>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <p className="text-sm text-gray-600">Data de Emissão:</p>
-                    <p className="font-medium">{format(new Date(certificate.issuedDate), 'dd/MM/yyyy')}</p>
+                {/* Dates */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-xs text-gray-500 mb-1">Data de Emissão</p>
+                    <p className="text-sm font-semibold">{format(new Date(certificate.issuedDate), 'dd/MM/yyyy')}</p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Data de Validade:</p>
-                    <p className={`font-medium ${
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-xs text-gray-500 mb-1">Validade</p>
+                    <p className={`text-sm font-semibold ${
                       certificate.status === "valid" 
                         ? "text-green-600" 
                         : certificate.status === "expired"
@@ -134,23 +162,32 @@ const PublicCertificate = () => {
                   </div>
                 </div>
                 
-                <div className="flex justify-center mb-4">
-                  <div className="relative">
-                    <img src={certificate.qrCode} alt="QR Code" className="h-32 w-32" />
-                    <QrCode size={18} className="absolute bottom-2 right-2 text-industrial-blue" />
+                {/* QR Code */}
+                <div className="flex justify-center py-3">
+                  <div className="relative p-3 bg-white border-2 border-gray-200 rounded-lg">
+                    <img 
+                      src={certificate.qrCode} 
+                      alt="QR Code" 
+                      className="w-24 h-24 object-contain"
+                    />
                   </div>
                 </div>
                 
-                <div className="text-center text-xs text-gray-500">
-                  <p>Este certificado pode ser verificado através do QR Code.</p>
-                  <p className="mt-1">ID: {certificate.id}</p>
+                {/* Footer Info */}
+                <div className="text-center space-y-1 pt-2 border-t">
+                  <p className="text-xs text-gray-600">
+                    Este certificado pode ser verificado através do QR Code
+                  </p>
+                  <p className="text-xs text-gray-400 font-mono">
+                    ID: {certificate._id || certificate.id}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
           <div className="h-16"></div> {/* Extra space at the bottom for better scrolling */}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 };

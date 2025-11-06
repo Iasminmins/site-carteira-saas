@@ -44,10 +44,9 @@ const EmployeeCertificates = () => {
     <div className="flex flex-col h-screen">
       <Header showMenuToggle={false} />
       
-      <div className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full w-full">
-          <main className="p-4 pb-20 md:p-6">
-            <div className="max-w-4xl mx-auto">
+      <div className="flex-1 overflow-y-auto">
+        <main className="p-4 pb-20 md:p-6">
+          <div className="max-w-4xl mx-auto">
               {/* Employee Info Card */}
               <Card className="mb-6 overflow-hidden border-0 shadow-lg">
                 <div className="h-24 bg-gradient-to-r from-industrial-blue to-blue-600"></div>
@@ -135,7 +134,6 @@ const EmployeeCertificates = () => {
               )}
             </div>
           </main>
-        </ScrollArea>
       </div>
     </div>
   );

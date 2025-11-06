@@ -75,7 +75,7 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
           </Button>
         </div>
         
-        <nav className="flex-1 p-4 overflow-y-auto">
+        <nav className="flex-1 p-4">
           <ul className="space-y-2">
             {menuItems.map((item) => (
               <li key={item.path}>
