@@ -48,13 +48,15 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
 
   return (
     <>
+      {/* Overlay - só aparece no mobile quando sidebar está aberto */}
       <div 
-        className={`fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden ${isOpen ? 'block' : 'hidden'}`} 
+        className={`fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
         onClick={toggleSidebar}
       />
       <aside 
-        className={`fixed top-0 left-0 z-30 h-screen transition-all duration-300 ease-in-out flex flex-col bg-industrial-blue text-white
-                    lg:w-16 lg:hover:w-64 ${isOpen ? 'w-64 translate-x-0' : 'w-0 -translate-x-full lg:w-16 lg:translate-x-0'}`}
+        className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 ease-in-out flex flex-col bg-industrial-blue text-white
+                    ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64'}
+                    lg:translate-x-0 lg:w-16 lg:hover:w-64`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

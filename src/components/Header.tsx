@@ -19,23 +19,23 @@ export function Header({ toggleSidebar, showMenuToggle = true }: HeaderProps) {
   };
 
   return (
-    <header className="w-full flex justify-between items-center py-4 px-6 bg-white shadow-sm animate-fade-in">
-      <div className="flex items-center">
+    <header className="w-full flex justify-between items-center py-4 px-4 sm:px-6 bg-white shadow-sm animate-fade-in sticky top-0 z-10">
+      <div className="flex items-center min-w-0">
         {showMenuToggle && (
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={toggleSidebar}
-            className="mr-2 sm:hidden text-industrial-blue"
+            className="mr-2 lg:hidden text-industrial-blue flex-shrink-0"
           >
             <Menu className="h-5 w-5" />
           </Button>
         )}
-        <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-industrial-blue flex items-center justify-center">
+        <div className="flex items-center min-w-0">
+          <div className="h-8 w-8 rounded-full bg-industrial-blue flex items-center justify-center flex-shrink-0">
             <div className="h-5 w-5 rounded-full bg-industrial-yellow"></div>
           </div>
-          <h1 className="ml-2 font-poppins font-semibold text-lg hidden sm:block">
+          <h1 className="ml-2 font-poppins font-semibold text-base sm:text-lg hidden sm:block truncate">
             Carteira Digital
           </h1>
         </div>

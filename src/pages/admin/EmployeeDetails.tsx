@@ -65,7 +65,7 @@ const EmployeeDetails = () => {
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleMenu} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleMenu} showMenuToggle={true} />
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto lg:ml-16">
           <main className="p-4 md:p-6 max-w-7xl mx-auto">
             {/* Back button */}
             <Button

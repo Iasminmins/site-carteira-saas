@@ -55,20 +55,21 @@ const Dashboard = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleSidebar} />
         
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto lg:ml-16">
           <div className="max-w-7xl mx-auto p-4 md:p-6">
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-600">Visão geral dos certificados da empresa</p>
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard</h1>
+                <p className="text-sm sm:text-base text-gray-600 mt-1">Visão geral dos certificados</p>
               </div>
               
               <Button 
                 onClick={() => navigate('/admin/certificates/new')}
-                className="bg-industrial-blue hover:bg-industrial-blue/90"
+                className="bg-industrial-blue hover:bg-industrial-blue/90 w-full sm:w-auto"
               >
                 <Plus size={18} className="mr-2" />
-                Novo Certificado
+                <span className="hidden sm:inline">Novo Certificado</span>
+                <span className="sm:hidden">Novo</span>
               </Button>
             </div>
             

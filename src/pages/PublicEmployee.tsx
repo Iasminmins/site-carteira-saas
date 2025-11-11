@@ -6,38 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Shield, Calendar, CheckCircle, XCircle, AlertCircle, Loader2 } from "lucide-react";
-import { useEmployeeService } from "@/services/employeeService";
-import { useCertificateService } from "@/services/certificateService";
+import { useCertificates } from "@/contexts/CertificateContext";
 
 
 const PublicEmployee = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { useEmployee } = useEmployeeService();
-  const { useEmployeeCertificates } = useCertificateService();
+  const { employees, getEmployeeCertificates } = useCertificates();
   
-  // Buscar dados do funcionário
-  const { data: employee, isLoading: isLoadingEmployee, error: errorEmployee } = useEmployee(id || "");
+  // Buscar dados do funcionário dos mockados
+  const employee = employees.find(emp => emp.id === id);
   
   // Buscar certificados do funcionário
-  const { data: certificates = [], isLoading: isLoadingCertificates } = useEmployeeCertificates(id || "");
-  
-  const isLoading = isLoadingEmployee || isLoadingCertificates;
-  
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-industrial-blue to-industrial-gray">
-        <Card className="p-8 max-w-md w-full text-center shadow-2xl">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-industrial-blue" />
-          <p className="text-gray-600">Carregando dados do funcionário...</p>
-        </Card>
-      </div>
-    );
-  }
+  const certificates = employee ? getEmployeeCertificates(employee.id) : [];
   
   // Error or not found state
-  if (!employee || errorEmployee) {
+  if (!employee) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-industrial-blue to-industrial-gray p-4">
         <Card className="p-8 max-w-md w-full text-center shadow-2xl">

@@ -88,30 +88,31 @@ const CertificatesManagement = () => {
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleMenu} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header showMenuToggle={true} toggleSidebar={toggleMenu} />
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto lg:ml-16">
           <main className="p-4 md:p-6 max-w-7xl mx-auto">
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Gerenciamento de Certificados</h1>
-                <p className="text-gray-600">Visualize e administre todos os certificados da empresa</p>
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">Gerenciamento de Certificados</h1>
+                <p className="text-sm sm:text-base text-gray-600 mt-1">Visualize e administre os certificados</p>
               </div>
               
-              <div className="flex flex-wrap gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={handleRefresh}
-                  className="h-10 w-10"
+                  className="h-10 w-10 flex-shrink-0"
                   title="Atualizar Lista"
                 >
                   <RefreshCw size={18} />
                 </Button>
                 <Button
                   onClick={handleAddCertificate}
-                  className="bg-industrial-blue hover:bg-industrial-blue/90"
+                  className="bg-industrial-blue hover:bg-industrial-blue/90 flex-1 sm:flex-initial"
                 >
                   <Plus size={18} className="mr-2" />
-                  Novo Certificado
+                  <span className="hidden sm:inline">Novo Certificado</span>
+                  <span className="sm:hidden">Novo</span>
                 </Button>
               </div>
             </div>

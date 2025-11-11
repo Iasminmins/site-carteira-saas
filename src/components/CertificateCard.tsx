@@ -1,6 +1,8 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { QRCodeDisplay } from "./QRCodeDisplay";
+import { generateCertificateQRCode } from "@/lib/qrcode";
 
 interface CertificateCardProps {
   id: string;
@@ -17,6 +19,7 @@ interface CertificateCardProps {
 }
 
 export function CertificateCard({
+  id,
   title,
   type,
   issuedDate,
@@ -42,6 +45,9 @@ export function CertificateCard({
   };
   
   const { label, color } = getStatusConfig(status);
+  
+  // Gera o QR code usando a função do frontend (sempre correto)
+  const qrCodeUrl = qrCode || generateCertificateQRCode(id);
   
   return (
     <Card 
@@ -106,17 +112,15 @@ export function CertificateCard({
         </div>
       </CardContent>
       
-      {/* QR Code no rodapé */}
+      {/* QR Code no rodapé - Agora clicável e interativo */}
       <CardFooter className="pb-3 pt-2 px-4 flex justify-center border-t bg-gray-50/50">
-        {qrCode && (
-          <div className="relative w-16 h-16 flex items-center justify-center">
-            <img 
-              src={qrCode} 
-              alt="QR Code" 
-              className="w-full h-full object-contain"
-            />
-          </div>
-        )}
+        <div onClick={(e) => e.stopPropagation()}>
+          <QRCodeDisplay 
+            qrCodeUrl={qrCodeUrl}
+            certificateId={id}
+            size="sm"
+          />
+        </div>
       </CardFooter>
     </Card>
   );

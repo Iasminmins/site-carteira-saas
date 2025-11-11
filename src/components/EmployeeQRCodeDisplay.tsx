@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { QrCode, Copy, Check, ExternalLink, X, Download } from "lucide-react";
+import { QrCode, Copy, Check, ExternalLink, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,36 +10,26 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { generateQRCode } from "@/lib/qrcode";
 
-interface QRCodeDisplayProps {
-  qrCodeUrl: string;
-  certificateId: string;
-  certificateUrl?: string;
-  size?: "sm" | "md" | "lg";
+interface EmployeeQRCodeDisplayProps {
+  employeeId: string;
+  employeeName: string;
 }
 
-export function QRCodeDisplay({ 
-  qrCodeUrl, 
-  certificateId, 
-  certificateUrl,
-  size = "md" 
-}: QRCodeDisplayProps) {
+export function EmployeeQRCodeDisplay({ 
+  employeeId, 
+  employeeName
+}: EmployeeQRCodeDisplayProps) {
   const [copied, setCopied] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   
-  // Determine the full certificate URL
-  const fullUrl = certificateUrl || `${window.location.origin}/certificate/${certificateId}`;
-  
-  // Size configurations
-  const sizeClasses = {
-    sm: "w-16 h-16",
-    md: "w-24 h-24",
-    lg: "w-32 h-32"
-  };
+  // Generate employee URL and QR code
+  const employeeUrl = `${window.location.origin}/employee/${employeeId}`;
+  const qrCodeUrl = generateQRCode(employeeUrl, 300);
   
   const handleCopyUrl = async () => {
     try {
-      await navigator.clipboard.writeText(fullUrl);
+      await navigator.clipboard.writeText(employeeUrl);
       setCopied(true);
       toast.success("URL copiada para a área de transferência!");
       setTimeout(() => setCopied(false), 2000);
@@ -49,7 +39,7 @@ export function QRCodeDisplay({
   };
   
   const handleOpenInNewTab = () => {
-    window.open(fullUrl, '_blank');
+    window.open(employeeUrl, '_blank');
   };
   
   const handleDownloadQR = async () => {
@@ -74,7 +64,7 @@ export function QRCodeDisplay({
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = url;
-              link.download = `qrcode-certificado-${certificateId}.png`;
+              link.download = `qrcode-${employeeName.replace(/\s+/g, '-').toLowerCase()}.png`;
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
@@ -90,7 +80,7 @@ export function QRCodeDisplay({
         toast.error("Erro ao baixar QR Code");
       };
       
-      img.src = qrCodeUrl;
+      img.src = generateQRCode(employeeUrl, 512);
     } catch (error) {
       toast.error("Erro ao baixar QR Code");
       console.error(error);
@@ -100,33 +90,25 @@ export function QRCodeDisplay({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="relative cursor-pointer group">
-          <img 
-            src={qrCodeUrl} 
-            alt="QR Code" 
-            className={`${sizeClasses[size]} object-contain transition-transform group-hover:scale-105`}
-            onLoad={() => setImageLoaded(true)}
-          />
-          {!imageLoaded && (
-            <div className={`${sizeClasses[size]} bg-gray-200 animate-pulse rounded`} />
-          )}
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all rounded flex items-center justify-center">
-            <QrCode className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={20} />
-          </div>
-        </div>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex-shrink-0"
+          title="Ver QR Code"
+        >
+          <Download size={16} />
+        </Button>
       </DialogTrigger>
       
       <DialogContent className="max-w-md p-0 gap-0 overflow-hidden">
-        {/* Header */}
         <DialogHeader className="p-4 pb-3 space-y-1">
-          <DialogTitle className="text-xl font-bold">QR Code do Certificado</DialogTitle>
+          <DialogTitle className="text-xl font-bold">QR Code do Colaborador</DialogTitle>
           <DialogDescription className="text-sm">
-            Escaneie para acessar o certificado
+            Escaneie para ver os certificados de {employeeName}
           </DialogDescription>
         </DialogHeader>
         
         <div className="px-4 pb-4 space-y-4">
-          {/* Large QR Code Display */}
           <div className="flex justify-center">
             <div className="bg-white p-4 rounded-lg border-2 border-gray-100 shadow-sm">
               <img 
@@ -137,15 +119,14 @@ export function QRCodeDisplay({
             </div>
           </div>
           
-          {/* Certificate URL */}
           <div className="space-y-2">
             <label className="text-xs font-semibold text-gray-700 block">
-              URL do Certificado:
+              URL do Colaborador:
             </label>
             <div className="flex items-center gap-2">
               <input 
                 type="text" 
-                value={fullUrl} 
+                value={employeeUrl} 
                 readOnly 
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-industrial-blue"
               />
@@ -170,7 +151,6 @@ export function QRCodeDisplay({
             </div>
           </div>
           
-          {/* Action Buttons */}
           <div className="flex gap-2">
             <Button 
               variant="outline" 
@@ -187,11 +167,10 @@ export function QRCodeDisplay({
               onClick={handleOpenInNewTab}
             >
               <ExternalLink size={16} className="mr-2" />
-              Abrir Certificado
+              Ver Certificados
             </Button>
           </div>
           
-          {/* Instructions */}
           <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
             <div className="flex items-start gap-2">
               <QrCode className="text-blue-600 flex-shrink-0 mt-0.5" size={18} />
@@ -201,7 +180,7 @@ export function QRCodeDisplay({
                   <li>Abra o app de câmera do celular</li>
                   <li>Aponte para o QR code</li>
                   <li>Toque na notificação</li>
-                  <li>Será redirecionado para o certificado</li>
+                  <li>Verá os certificados</li>
                 </ol>
               </div>
             </div>

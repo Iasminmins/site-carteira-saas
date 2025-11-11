@@ -26,6 +26,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { EmployeeCard } from "@/components/EmployeeCard";
+import { EmployeeQRCodeDisplay } from "@/components/EmployeeQRCodeDisplay";
 import {
   Dialog,
   DialogContent,
@@ -105,20 +106,20 @@ const EmployeesManagement = () => {
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleMenu} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleMenu} showMenuToggle={true} />
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto lg:ml-16">
           <main className="p-4 md:p-6 max-w-7xl mx-auto pb-20">
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Gerenciamento de Colaboradores</h1>
-                  <p className="text-gray-600">Visualize e administre todos os colaboradores da empresa</p>
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="min-w-0">
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">Gerenciamento de Colaboradores</h1>
+                  <p className="text-sm sm:text-base text-gray-600 mt-1">Visualize e administre todos os colaboradores</p>
                 </div>
                 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2 w-full sm:w-auto">
                   <Button
                     variant="outline"
                     size="icon"
                     onClick={handleRefresh}
-                    className="h-10 w-10"
+                    className="h-10 w-10 flex-shrink-0"
                     title="Atualizar Lista"
                   >
                     <RefreshCw size={18} />
@@ -126,10 +127,11 @@ const EmployeesManagement = () => {
                   <Dialog open={showAddEmployee} onOpenChange={setShowAddEmployee}>
                     <DialogTrigger asChild>
                       <Button
-                        className="bg-industrial-blue hover:bg-industrial-blue/90"
+                        className="bg-industrial-blue hover:bg-industrial-blue/90 flex-1 sm:flex-initial"
                       >
                         <Plus size={18} className="mr-2" />
-                        Novo Colaborador
+                        <span className="hidden sm:inline">Novo Colaborador</span>
+                        <span className="sm:hidden">Novo</span>
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -198,62 +200,69 @@ const EmployeesManagement = () => {
                     <div className="space-y-4">
                       {employeeCertificatesCount.map((emp) => (
                         <Card key={emp.id} className="overflow-hidden">
-                          <div className="flex flex-col sm:flex-row">
-                            <div className="flex items-center p-4 sm:w-1/2">
-                              <Avatar className="h-12 w-12 mr-4 border-2 border-industrial-blue">
+                          <div className="flex flex-col">
+                            {/* Employee Info - Mobile First */}
+                            <div className="flex items-center p-4">
+                              <Avatar className="h-12 w-12 mr-3 flex-shrink-0 border-2 border-industrial-blue">
                                 <AvatarImage src={emp.photo} />
                                 <AvatarFallback className="bg-industrial-blue text-white">
                                   {emp.name.split(' ').map(n => n[0]).join('')}
                                 </AvatarFallback>
                               </Avatar>
-                              <div className="flex-1">
-                                <h4 className="font-medium">{emp.name}</h4>
-                                <p className="text-sm text-gray-600">ID: {emp.id}</p>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium truncate">{emp.name}</h4>
+                                <p className="text-sm text-gray-600 truncate">ID: {emp.id}</p>
                               </div>
                             </div>
                             
-                            <div className="flex flex-col sm:flex-row sm:w-1/2 border-t sm:border-t-0 sm:border-l">
-                              <div className="flex-1 p-4 border-b sm:border-b-0 sm:border-r bg-gray-50">
+                            {/* Stats - Mobile Friendly Grid */}
+                            <div className="grid grid-cols-2 border-t">
+                              <div className="p-4 border-r bg-gray-50">
                                 <div className="flex justify-between items-center mb-2">
                                   <span className="text-xs text-gray-600">Certificados</span>
-                                  <FileText size={16} className="text-gray-400" />
+                                  <FileText size={14} className="text-gray-400" />
                                 </div>
-                                <div className="flex gap-2">
-                                  <Badge variant="outline" className="bg-white text-gray-800">
-                                    Total: {emp.total}
-                                  </Badge>
-                                </div>
+                                <Badge variant="outline" className="bg-white text-gray-800 text-xs">
+                                  Total: {emp.total}
+                                </Badge>
                               </div>
                               
-                              <div className="flex-1 p-4 bg-gray-50">
+                              <div className="p-4 bg-gray-50">
                                 <div className="flex justify-between items-center mb-2">
                                   <span className="text-xs text-gray-600">Status</span>
-                                  <Award size={16} className="text-gray-400" />
+                                  <Award size={14} className="text-gray-400" />
                                 </div>
                                 <div className="flex flex-wrap gap-1">
-                                  <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
+                                  <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200 text-xs px-1.5 py-0">
                                     {emp.valid}
                                   </Badge>
-                                  <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
+                                  <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200 text-xs px-1.5 py-0">
                                     {emp.expiring}
                                   </Badge>
-                                  <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">
+                                  <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200 text-xs px-1.5 py-0">
                                     {emp.expired}
                                   </Badge>
                                 </div>
                               </div>
                             </div>
                             
-                            <div className="p-4 flex flex-col space-y-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="w-full"
-                                onClick={() => handleViewDetails(emp.id)}
-                              >
-                                Ver Detalhes
-                                <ChevronRight size={16} className="ml-2" />
-                              </Button>
+                            {/* Actions - Full Width on Mobile */}
+                            <div className="p-4 border-t flex flex-col gap-2">
+                              <div className="flex gap-2">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="flex-1"
+                                  onClick={() => handleViewDetails(emp.id)}
+                                >
+                                  Ver Detalhes
+                                  <ChevronRight size={16} className="ml-2" />
+                                </Button>
+                                <EmployeeQRCodeDisplay 
+                                  employeeId={emp.id}
+                                  employeeName={emp.name}
+                                />
+                              </div>
                               <EmployeeCard
                                 name={emp.name}
                                 id={emp.id}

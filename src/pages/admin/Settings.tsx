@@ -66,11 +66,11 @@ const Settings = () => {
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleMenu} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleMenu} showMenuToggle={true} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:ml-16">
           <div className="max-w-4xl mx-auto">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-900">Configurações</h1>
-              <p className="text-gray-600">Gerencie suas preferências e informações de perfil</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Configurações</h1>
+              <p className="text-sm sm:text-base text-gray-600">Gerencie suas preferências</p>
             </div>
 
           <Tabs defaultValue="profile" className="w-full">

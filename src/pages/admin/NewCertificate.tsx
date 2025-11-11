@@ -87,7 +87,7 @@ const NewCertificate = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
         
-        <div className="flex-1 overflow-y-auto p-4 md:p-6">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:ml-16">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6">
               <Button 
@@ -99,8 +99,8 @@ const NewCertificate = () => {
                 Voltar
               </Button>
               
-              <h1 className="text-2xl font-bold text-gray-900">Novo Certificado</h1>
-              <p className="text-gray-600">Cadastre um novo certificado para um colaborador</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Novo Certificado</h1>
+              <p className="text-sm sm:text-base text-gray-600">Cadastre um novo certificado</p>
             </div>
             
             <Card>

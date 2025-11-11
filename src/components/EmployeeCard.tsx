@@ -16,11 +16,12 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { FileText, Award, Badge as CertificateBadge, IdCard, QrCode, Check } from "lucide-react";
+import { FileText, Award, Badge as CertificateBadge, IdCard, QrCode, Check, Download } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { generateQRCode } from "@/lib/qrcode";
+import { toast } from "sonner";
 
 interface EmployeeCardProps {
   name: string;
@@ -57,6 +58,60 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
   // Navigate to employee details
   const handleViewDetails = () => {
     navigate(`/admin/employees/${id}`);
+  };
+  
+  // Function to download QR code
+  const handleDownloadQRCode = async () => {
+    try {
+      // Criar um canvas para desenhar o QR code em alta qualidade
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      // Permitir CORS para a imagem
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        // Tamanho maior para melhor qualidade
+        canvas.width = 512;
+        canvas.height = 512;
+        
+        if (ctx) {
+          // Fundo branco
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Desenhar o QR code
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          
+          // Converter para blob e fazer download
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `qrcode-${name.replace(/\s+/g, '-').toLowerCase()}.png`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+              
+              toast.success("QR Code baixado com sucesso!");
+            }
+          }, 'image/png');
+        }
+      };
+      
+      img.onerror = () => {
+        toast.error("Erro ao baixar QR Code");
+      };
+      
+      // Usar um QR code de tamanho maior para download
+      img.src = generateQRCode(employeeUrl, 512);
+    } catch (error) {
+      toast.error("Erro ao baixar QR Code");
+      console.error(error);
+    }
   };
   
   // Function to print the card
@@ -467,13 +522,19 @@ export function EmployeeCard({ name, id, photo, certificates }: EmployeeCardProp
           </div>
         </ScrollArea>
         
-        <div className="flex justify-between mt-4">
+        <div className="flex gap-2 justify-between mt-4">
           <DialogClose asChild>
             <Button variant="outline">Fechar</Button>
           </DialogClose>
-          <Button onClick={handlePrint}>
-            Imprimir Carteirinha
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleDownloadQRCode}>
+              <Download size={16} className="mr-2" />
+              QR Code
+            </Button>
+            <Button onClick={handlePrint}>
+              Imprimir Carteirinha
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -7,30 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Printer, Loader2, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useCertificateService } from "@/services/certificateService";
+import { useCertificates } from "@/contexts/CertificateContext";
+import { generateCertificateQRCode } from "@/lib/qrcode";
 
 const PublicCertificate = () => {
   const { id } = useParams<{ id: string }>();
-  const { useCertificateWithEmployee } = useCertificateService();
+  const { getCertificate, employees } = useCertificates();
   const navigate = useNavigate();
   
-  // Buscar certificado da API com dados do funcionário
-  const { data: certificate, isLoading, error } = useCertificateWithEmployee(id || "");
-  
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="p-8 max-w-md w-full text-center shadow-xl">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-industrial-blue" />
-          <p className="text-gray-600">Carregando certificado...</p>
-        </Card>
-      </div>
-    );
-  }
+  // Buscar certificado dos dados mockados
+  const certificate = getCertificate(id || "");
+  const employee = certificate ? employees.find(emp => emp.id === certificate.employeeId) : null;
   
   // Error or not found state
-  if (!certificate || error) {
+  if (!certificate) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <Card className="p-8 max-w-md w-full text-center shadow-xl">
@@ -61,6 +51,9 @@ const PublicCertificate = () => {
   };
   
   const { label, className } = getStatusConfig(certificate.status);
+  
+  // Gera o QR code usando a função do frontend (sempre correto)
+  const qrCodeUrl = certificate.qrCode || generateCertificateQRCode(certificate.id);
 
   const handlePrint = () => {
     window.print();
@@ -118,20 +111,20 @@ const PublicCertificate = () => {
                 {/* Employee Info */}
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                   <div className="h-16 w-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
-                    {certificate.employeeId?.photo && (
+                    {employee?.photo && (
                       <img 
-                        src={certificate.employeeId.photo} 
-                        alt={certificate.employeeId.name} 
+                        src={employee.photo} 
+                        alt={employee.name} 
                         className="h-full w-full object-cover"
                       />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h2 className="font-semibold text-base truncate">
-                      {certificate.employeeId?.name || 'Funcionário'}
+                      {employee?.name || certificate.employeeName || 'Funcionário'}
                     </h2>
                     <p className="text-sm text-gray-600">
-                      Matrícula: {certificate.employeeId?.matricula || 'N/A'}
+                      ID: {certificate.employeeId || 'N/A'}
                     </p>
                   </div>
                 </div>
@@ -166,7 +159,7 @@ const PublicCertificate = () => {
                 <div className="flex justify-center py-3">
                   <div className="relative p-3 bg-white border-2 border-gray-200 rounded-lg">
                     <img 
-                      src={certificate.qrCode} 
+                      src={qrCodeUrl}
                       alt="QR Code" 
                       className="w-24 h-24 object-contain"
                     />
@@ -179,7 +172,7 @@ const PublicCertificate = () => {
                     Este certificado pode ser verificado através do QR Code
                   </p>
                   <p className="text-xs text-gray-400 font-mono">
-                    ID: {certificate._id || certificate.id}
+                    ID: {certificate.id}
                   </p>
                 </div>
               </div>
