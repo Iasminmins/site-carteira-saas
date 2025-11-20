@@ -54,55 +54,58 @@ export function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         onClick={toggleSidebar}
       />
       <aside 
-        className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 ease-in-out flex flex-col bg-industrial-blue text-white
+        className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 ease-in-out flex flex-col bg-gradient-to-b from-industrial-blue to-blue-900 text-white shadow-2xl
                     ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64'}
-                    lg:translate-x-0 lg:w-16 lg:hover:w-64`}
+                    lg:translate-x-0 lg:w-20 lg:hover:w-64`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <div className="flex items-center overflow-hidden">
-            <div className="h-8 w-8 min-w-[2rem] rounded-full bg-white flex items-center justify-center">
-              <div className="h-5 w-5 rounded-full bg-industrial-yellow"></div>
+        <div className="flex items-center justify-between p-4 border-b border-white/10 min-h-[65px]">
+          <div className={`flex items-center gap-3 overflow-hidden transition-all duration-300`}>
+            <div className="h-10 w-10 min-w-[2.5rem] rounded-lg bg-white flex items-center justify-center shadow-lg">
+              <div className="h-6 w-6 rounded-full bg-industrial-yellow"></div>
             </div>
-            <h2 className="ml-2 font-poppins font-semibold whitespace-nowrap overflow-hidden">Carteira Digital</h2>
+            <div className={`overflow-hidden whitespace-nowrap transition-all duration-300`}>
+              <h2 className="font-poppins font-bold text-base">Carteira Digital</h2>
+              <p className="text-xs text-white/70 mt-0.5">v1.0.0</p>
+            </div>
           </div>
           <Button 
             variant="ghost" 
-            className="lg:hidden text-industrial-yellow hover:bg-white/10" 
+            className="lg:hidden text-white hover:bg-white/10" 
             size="icon"
             onClick={toggleSidebar}
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={20} />
           </Button>
         </div>
         
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
+        <nav className="flex-1 p-3 overflow-y-auto">
+          <ul className="space-y-1.5">
             {menuItems.map((item) => (
               <li key={item.path}>
                 <NavLink
                   to={item.path}
                   className={({ isActive }) => 
-                    `flex items-center py-2 px-4 rounded-lg transition-colors ${
+                    `flex items-center py-3 px-3.5 rounded-lg transition-all duration-200 ${
                       isActive 
-                        ? 'bg-white/10 text-industrial-yellow' 
-                        : 'hover:bg-white/5'
+                        ? 'bg-white/15 text-industrial-yellow shadow-md' 
+                        : 'hover:bg-white/10'
                     }`
                   }
                 >
-                  <span className="min-w-[20px] mr-3">{item.icon}</span>
-                  <span className="whitespace-nowrap overflow-hidden transition-opacity duration-300 ease-in-out">{item.title}</span>
+                  <span className="min-w-[20px] mr-3 flex items-center justify-center">{item.icon}</span>
+                  <span className="whitespace-nowrap overflow-hidden transition-opacity duration-300 ease-in-out font-medium text-sm">{item.title}</span>
                 </NavLink>
               </li>
             ))}
           </ul>
         </nav>
         
-        <div className="p-4 mt-auto border-t border-white/10">
-          <div className="bg-white/10 rounded-lg p-3 text-sm">
-            <p className="font-medium whitespace-nowrap overflow-hidden">Carteira Digital</p>
-            <p className="text-xs opacity-70 whitespace-nowrap overflow-hidden">v1.0.0</p>
+        <div className="p-3 mt-auto border-t border-white/10">
+          <div className="bg-white/10 rounded-lg p-3 text-sm backdrop-blur-sm">
+            <p className="font-semibold whitespace-nowrap overflow-hidden text-sm">Carteira Digital</p>
+            <p className="text-xs opacity-70 whitespace-nowrap overflow-hidden mt-1">Versão 1.0.0</p>
           </div>
         </div>
       </aside>
